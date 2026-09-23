@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Quản lý khảo sát</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="/config.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 p-4 md:p-8">
+  <main class="max-w-6xl mx-auto">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div><h1 class="text-2xl font-bold">Dữ liệu khảo sát</h1><p class="text-sm text-gray-500">Trạm Ký Gửi và Nâng Cấp Giáo Trình</p></div>
+      <div class="flex gap-2"><button id="export" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold">EXPORT EXCEL</button><button id="logout" class="border px-4 py-2 rounded-lg">Đăng xuất</button></div>
+    </div>
+    <div id="login" class="bg-white rounded-xl p-6 max-w-md shadow-sm"><label class="block font-semibold mb-2">Mã admin</label><input id="token" type="password" class="border rounded-lg p-2 w-full mb-3"><button id="loginButton" class="bg-indigo-600 text-white px-4 py-2 rounded-lg">Vào quản lý</button><p id="loginError" class="text-red-600 text-sm mt-3 hidden">Không thể xác thực.</p></div>
+    <section id="dashboard" class="hidden">
+      <div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"></div>
+      <div class="bg-white rounded-xl shadow-sm p-4 overflow-auto"><div class="flex flex-wrap gap-2 mb-4"><input id="search" placeholder="Tìm response ID..." class="border rounded-lg p-2"><select id="status" class="border rounded-lg p-2"><option value="">Tất cả trạng thái</option><option value="completed">completed</option><option value="screened_out">screened_out</option></select><button id="refresh" class="border rounded-lg px-3" type="button">Làm mới</button><span id="refreshStatus" class="text-sm text-gray-500 self-center"></span></div><table class="min-w-full text-sm"><thead id="head" class="text-left border-b"></thead><tbody id="rows"></tbody></table></div>
+    </section>
+  </main>
+<script>
+const config = window.SURVEY_CONFIG || {};
+let authToken = localStorage.getItem('khaosat-admin-token') || '';
+let allRows = [];
+let answerColumns = [];
+const $ = id => document.getElementById(id);
+function apiUrl(params) { return config.GOOGLE_APPS_SCRIPT_URL + '?' + new URLSearchParams({ token: authToken, ...params }); }
+function escapeHtml(value) { return String(value ?? '').replace(/[&<>]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[char])); }
+function filteredRows() {
+  const search = $('search').value.toLowerCase();
+  const status = $('status').value;
+  return allRows.filter(row => (!status || row.status === status) && (!search || String(row.response_id).toLowerCase().includes(search)));
+}
+function render() {
+  const rows = filteredRows();
+  const columns = ['response_id', 'timestamp', 'survey_version', 'status', ...answerColumns];
+  $('stats').innerHTML = [['Tổng', allRows.length], ['Completed', allRows.filter(row => row.status === 'completed').length], ['Screened out', allRows.filter(row => row.status === 'screened_out').length], ['Incomplete', allRows.filter(row => row.status === 'incomplete').length]].map(([label, value]) => `<div class="bg-white rounded-xl p-4 shadow-sm"><div class="text-sm text-gray-500">${label}</div><strong class="text-2xl">${value}</strong></div>`).join('');
+  $('head').innerHTML = '<tr>' + columns.map(c => `<th class="py-2 pr-5 whitespace-nowrap">${c}</th>`).join('') + '<th class="py-2 whitespace-nowrap">Thao tác</th></tr>';
+  $('rows').innerHTML = rows.map(row => '<tr class="border-b">' + columns.map(c => `<td class="py-2 pr-5 whitespace-nowrap">${escapeHtml(row[c])}</td>`).join('') + `<td class="py-2 whitespace-nowrap"><button type="button" class="delete-response text-red-600 hover:underline" data-response-id="${escapeHtml(row.response_id)}">Xóa</button></td></tr>`).join('');
+}
+async function load() {
+  $('refreshStatus').textContent = 'Đang tải...';
+  const response = await fetch(apiUrl({ action: 'responses' }));
+  const data = await response.json();
+  if (!response.ok || !data.ok) throw new Error(data.error || 'load failed');
+  allRows = data.rows; answerColumns = data.columns;
+  $('login').classList.add('hidden'); $('dashboard').classList.remove('hidden'); render();
+  $('refreshStatus').textContent = `Đã cập nhật ${new Date().toLocaleTimeString('vi-VN')}`;
+}
+$('loginButton').onclick = async () => { authToken = $('token').value; try { await load(); localStorage.setItem('khaosat-admin-token', authToken); } catch { $('loginError').classList.remove('hidden'); } };
+$('refresh').onclick = () => load().catch(() => { $('refreshStatus').textContent = 'Không thể làm mới'; }); $('search').oninput = render; $('status').onchange = render;
+$('rows').addEventListener('click', async event => {
+  const button = event.target.closest('.delete-response');
+  if (!button || !confirm(`Xóa response ${button.dataset.responseId}? Thao tác này không thể hoàn tác.`)) return;
+  const response = await fetch(apiUrl({ action: 'delete', response_id: button.dataset.responseId }));
+  const result = await response.json();
+  if (!response.ok || !result.ok) return alert('Không thể xóa response.');
+  await load();
+});
+$('export').onclick = () => {
+  const rows = filteredRows();
+  const worksheet = XLSX.utils.json_to_sheet(rows);
+  const workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, 'DATA');
+  XLSX.writeFile(workbook, 'survey_responses.xlsx');
+};
+$('logout').onclick = () => { localStorage.removeItem('khaosat-admin-token'); location.reload(); };
+if (authToken) load().catch(() => localStorage.removeItem('khaosat-admin-token'));
+</script>
+</body></html>
