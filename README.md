@@ -1,56 +1,46 @@
-# Khảo sát với Google Sheets
+# Khảo sát đăng nhập Google, lưu vào Google Sheets
 
-Survey persistence hiện chạy theo luồng:
+Người tham gia đăng nhập Google ở trang đầu. Express xác minh ID token, lấy email từ tài khoản Google và giữ phiên đăng nhập trong 2 giờ. Khi gửi khảo sát, Express ký yêu cầu rồi chuyển sang Apps Script; Apps Script kiểm tra chữ ký, chặn email hoặc tài khoản đã trả lời, và ghi vào tab `Responses_v2`. Trang quản lý vẫn đọc Sheet bằng Apps Script như trước.
 
-```text
-Survey -> Google Apps Script -> Google Sheets
-                         ^
-                         |
-                       /admin
-```
+## 1. Tạo Google OAuth Client ID
 
-Node/Express chỉ phục vụ `main.html`, `admin.html`, `config.js` và không còn lưu survey vào database.
+1. Trong [Google Cloud Console](https://console.cloud.google.com/apis/credentials), chọn hoặc tạo project; cấu hình **Google Auth Platform > Branding** và **Audience: External** cho người dùng bên ngoài. Trước khi mở khảo sát công khai, chọn **Publish app** trong Audience để chuyển sang **In production**. Chỉ cần quyền đăng nhập mặc định `openid`, `email`, `profile`; không cần quyền Gmail hoặc Google Sheets của người tham gia. Theo [Google](https://support.google.com/cloud/answer/15549945), Sign in with Google chỉ dùng tên, email, hồ sơ cơ bản có ngoại lệ đối với giới hạn test users ở trạng thái Testing, nhưng vẫn nên xuất bản ứng dụng cho khảo sát công khai.
+2. Tạo **OAuth client ID > Web application**. Thêm đúng hai **Authorized JavaScript origins**: `http://localhost:3000` và `https://survey-9vu2.onrender.com`. Luồng này dùng JavaScript callback nên không cần redirect URI.
+3. Sao chép **Client ID** dạng `...apps.googleusercontent.com`. Nếu Google yêu cầu xác minh quyền sở hữu miền và không chấp nhận miền Render, cần dùng miền riêng do nhóm quản lý.
 
-## 1. Tạo Google Sheet
+## 2. Cấu hình bí mật và Apps Script
 
-Sử dụng Google Sheet của dự án. Bản khảo sát mới ghi vào tab `Responses_v2`; hàm `authorizeDeployment` sẽ tự tạo tab này và hàng tiêu đề. Tab `Responses` cũ được giữ nguyên để dữ liệu trước khi sửa câu hỏi không bị lẫn với dữ liệu mới. Các cột của tab mới là:
+Tạo hai chuỗi ngẫu nhiên **khác nhau**, mỗi chuỗi ít nhất 32 ký tự: một cho `GAS_SHARED_SECRET`, một cho `SESSION_SECRET`. Có thể tạo từng chuỗi bằng `node -e "process.stdout.write(require('node:crypto').randomBytes(32).toString('hex'))"`. Không đưa các chuỗi này vào GitHub, `config.js`, hoặc HTML.
 
-`timestamp`, `response_id`, `survey_version`, `status`, các mã câu hỏi mới từ `S1`, `D1`... `YD2`, `Feedback`, `Referral`, và cuối cùng là `email`. Khi chạy mã mới, cột `Referral` sẽ được chèn trước `email` trên tab `Responses_v2` đang có, giữ nguyên dữ liệu email cũ.
+1. Trong Apps Script gắn với Google Sheet hiện tại, thay toàn bộ mã bằng [google-apps-script/Code.gs](google-apps-script/Code.gs), rồi lưu.
+2. Vào **Project Settings > Script properties**, tạo thuộc tính `SURVEY_SHARED_SECRET` với giá trị **giống hệt** `GAS_SHARED_SECRET` sẽ đặt trên Render.
+3. Chạy hàm `authorizeDeployment` một lần và cấp quyền nếu Google yêu cầu. Hàm tự thêm cột `google_sub_hash` trước `email` trong `Responses_v2`, giữ nguyên email và phản hồi cũ.
+4. Chọn **Deploy > Manage deployments > Edit > New version > Deploy** trên Web app đang dùng. URL `/exec` cũ không đổi. Web app tiếp tục **Execute as: Me** và **Who has access: Anyone**; các yêu cầu khảo sát không có chữ ký giờ bị từ chối.
 
-## 2. Deploy Apps Script
+## 3. Cấu hình Render
 
-1. Mở **Extensions > Apps Script** trong Google Sheet.
-2. Thay toàn bộ nội dung `Code.gs` trên Apps Script bằng [google-apps-script/Code.gs](google-apps-script/Code.gs) của dự án và lưu lại.
-3. Kiểm tra `SPREADSHEET_ID` đúng với Google Sheet và giữ `SHEET_NAME = 'Responses_v2'`.
-4. Trong danh sách hàm ở thanh công cụ, chọn `authorizeDeployment`, bấm **Run**, rồi cấp quyền truy cập Sheet cho tài khoản triển khai. Hàm này tạo tab `Responses_v2` nếu chưa có, thêm cột `Referral` trước `email` nếu cần, và bỏ tiền tố `A.`–`F.` khỏi tên người giới thiệu đã lưu.
-5. Nếu đã có Web app: chọn **Deploy > Manage deployments > Edit**, ở **Version** chọn **New version**, rồi bấm **Deploy**. URL `/exec` cũ tiếp tục dùng được.
-6. Nếu chưa có Web app: chọn **Deploy > New deployment > Web app**, đặt **Execute as: Me**, **Who has access: Anyone**, rồi bấm **Deploy** và sao chép URL `/exec`.
+Trong service đang phục vụ `https://survey-9vu2.onrender.com/`, mở **Environment** và đặt:
 
-## 3. Cấu hình frontend
+| Tên biến | Giá trị |
+| --- | --- |
+| `GOOGLE_CLIENT_ID` | Client ID ở bước 1 |
+| `GAS_URL` | URL Apps Script `/exec` đang dùng |
+| `GAS_SHARED_SECRET` | Chuỗi bí mật đã đặt trong Apps Script Script properties |
+| `SESSION_SECRET` | Chuỗi bí mật thứ hai, khác chuỗi trên |
+| `PUBLIC_ORIGIN` | `https://survey-9vu2.onrender.com` (không có dấu `/` cuối) |
 
-Mở [config.js](config.js) và thay:
+Sau khi lưu biến môi trường, triển khai mã Node mới trên Render. `config.js` hiện chỉ còn cần cho trang quản lý cũ; khảo sát không gửi trực tiếp tới Apps Script. Không có chế độ nhập email thủ công khi thiếu cấu hình Google.
 
-```js
-window.SURVEY_CONFIG = {
-  GOOGLE_APPS_SCRIPT_URL: "URL_WEB_APP_DANG_EXEC"
-};
-```
+## 4. Chạy và kiểm tra ở máy cá nhân
 
-URL Apps Script chỉ nằm tại một nơi. Nếu cập nhật deployment cũ, giữ nguyên URL hiện tại trong `config.js`; nếu tạo deployment mới, thay bằng URL `/exec` mới. Request dùng `application/x-www-form-urlencoded` để tránh CORS preflight. Người tham gia nhập email trước khi bắt đầu; Apps Script kiểm tra email trùng lúc bắt đầu và ngay trước khi ghi phản hồi. Bấm gửi ở cuối khảo sát sẽ lưu trực tiếp vào Sheet, không gửi email hay yêu cầu mã xác nhận.
-
-## 4. Chạy frontend
+Sao chép [.env.example](.env.example) thành `.env`, điền Client ID, URL Apps Script và hai bí mật; giữ `PUBLIC_ORIGIN=http://localhost:3000`. File `.env` đã bị Git bỏ qua. Sau đó chạy:
 
 ```sh
 npm install
+npm test
 npm start
 ```
 
-Mở `http://localhost:3000/` để khảo sát và `http://localhost:3000/admin.html` để xem dữ liệu từ Google Sheet. Không cần chạy backend riêng để lưu response; cần giữ static server nếu mở bằng URL local.
+Mở `http://localhost:3000/`. Thử đăng nhập bằng một tài khoản Google chưa có trong `Responses_v2`, điền và gửi khảo sát. Đăng nhập lại cùng tài khoản phải thấy thông báo đã tham gia; tài khoản có email trùng phản hồi cũ cũng bị chặn. Kiểm tra cột `google_sub_hash` được điền ở dòng mới, cột `email` vẫn nằm cuối và chỉ chứa email Google. Trang quản lý ở `http://localhost:3000/admin.html` tiếp tục hoạt động như trước.
 
-Sau khi cập nhật Web app, thử với một email chưa có trong `Responses_v2`: nhập email, hoàn thành bảng hỏi và bấm gửi. Tải lại trang rồi nhập cùng email để kiểm tra thông báo đã tham gia. Lượt gửi được lưu vào Sheet thật. Trang quản lý đọc tab `Responses_v2`; dữ liệu cũ vẫn nằm trong tab `Responses`.
-
-Admin giữ tìm kiếm, lọc status, làm mới, xóa response trên Sheet và export `.xlsx` tại trình duyệt.
-
-## Lưu ý
-
-Không commit Spreadsheet ID nếu muốn giữ kín sheet. Web App URL không phải credential. Dữ liệu SQLite cũ không được migrate và không còn được hiển thị trong admin mới.
+Google Sign-In chặn việc gõ tùy ý email của người khác, nhưng một người có nhiều tài khoản Google vẫn có thể tham gia bằng từng tài khoản. Với Google Account dùng email ngoài Gmail/Google Workspace, trạng thái `email_verified` không chứng minh chắc chắn người dùng **hiện** còn sở hữu hộp thư đó.

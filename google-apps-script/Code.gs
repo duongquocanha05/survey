@@ -1,7 +1,7 @@
 const SPREADSHEET_ID = '1iMVTEqfeiyodXZGDSgeaj4rqoL1EMzzqBW9CyzZ0bnQ';
 const SHEET_NAME = 'Responses_v2';
 const ADMIN_TOKEN = 'admin123';
-const SURVEY_VERSION = 'v2.3';
+const SURVEY_VERSION = 'v2.4';
 const FIELDS = [
   'S1','D1','D2',
   'Q1_1','Q1_2','Q1_3','Q1_4','Q1_5','Q1_6',
@@ -10,7 +10,7 @@ const FIELDS = [
   'Q4_1','Q4_2','Q4_3_Opt1','Q4_3_Opt2','Q4_3_Opt3','Q4_3_Opt4','Q4_4','Q4_5',
   'Q5_1','Q5_2','TL1','TL2','TT1','TT2','YD1','YD2','Feedback','Referral'
 ];
-const HEADERS = ['timestamp', 'response_id', 'survey_version', 'status'].concat(FIELDS, ['email']);
+const HEADERS = ['timestamp', 'response_id', 'survey_version', 'status'].concat(FIELDS, ['google_sub_hash', 'email']);
 const LIKERT_FIELDS = ['TL1','TL2','TT1','TT2','YD1','YD2'];
 const REQUIRED_FIELDS = FIELDS.filter(field => field !== 'Feedback');
 const REFERRAL_OPTIONS = ['Dương Quốc Anh','Nguyễn Hoàng Ân','Dương Yến Ngọc','Hoàng Thanh Long','Nguyễn Hà Phương','Lê Thị Như Phương'];
@@ -32,17 +32,22 @@ function authorizeDeployment() {
 }
 
 function ensureHeaders_(sheet) {
-  if (sheet.getMaxColumns() < HEADERS.length) sheet.insertColumnsAfter(sheet.getMaxColumns(), HEADERS.length - sheet.getMaxColumns());
   if (sheet.getLastRow() === 0) {
+    if (sheet.getMaxColumns() < HEADERS.length) sheet.insertColumnsAfter(sheet.getMaxColumns(), HEADERS.length - sheet.getMaxColumns());
     sheet.appendRow(HEADERS);
     return;
   }
-  const previousEmailColumn = HEADERS.length - 1;
-  if (sheet.getRange(1, previousEmailColumn).getValue() === 'email' && sheet.getRange(1, HEADERS.length).getValue() !== 'email') {
-    sheet.insertColumnBefore(previousEmailColumn);
+  let headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  if (!headers.includes('email')) throw new Error('Missing email column');
+  for (const field of ['Referral', 'google_sub_hash']) {
+    if (!headers.includes(field)) {
+      const column = headers.indexOf('email') + 1;
+      sheet.insertColumnBefore(column);
+      sheet.getRange(1, column).setValue(field);
+      headers.splice(column - 1, 0, field);
+    }
   }
-  sheet.getRange(1, previousEmailColumn).setValue('Referral');
-  sheet.getRange(1, HEADERS.length).setValue('email');
+  if (HEADERS.some(function(header, index) { return headers[index] !== header; })) throw new Error('Unexpected sheet headers');
 }
 
 function normalizeEmail_(value) {
@@ -53,10 +58,13 @@ function normalizeEmail_(value) {
   return email;
 }
 
-function emailExists_(sheet, email) {
+function identityExists_(sheet, email, googleSubHash) {
   const lastRow = sheet.getLastRow();
-  return lastRow > 1 && sheet.getRange(2, HEADERS.length, lastRow - 1, 1).getValues()
-    .some(function(row) { return normalizeEmail_(row[0]) === email; });
+  if (lastRow < 2) return false;
+  const emailColumn = HEADERS.indexOf('email');
+  const subjectColumn = HEADERS.indexOf('google_sub_hash');
+  return sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues()
+    .some(function(row) { return normalizeEmail_(row[emailColumn]) === email || row[subjectColumn] === googleSubHash; });
 }
 
 function asArray_(value) {
@@ -106,15 +114,32 @@ function json_(payload) {
   return ContentService.createTextOutput(JSON.stringify(payload)).setMimeType(ContentService.MimeType.JSON);
 }
 
+function hasValidSignature_(parameters) {
+  const secret = PropertiesService.getScriptProperties().getProperty('SURVEY_SHARED_SECRET');
+  const payload = String(parameters.payload || '');
+  const signature = String(parameters.signature || '').toLowerCase();
+  if (!secret || !payload || payload.length > 100000 || !/^[a-f0-9]{64}$/.test(signature)) return false;
+  const bytes = Utilities.computeHmacSha256Signature(payload, secret, Utilities.Charset.UTF_8);
+  const expected = bytes.map(function(byte) { return ('0' + (byte & 255).toString(16)).slice(-2); }).join('');
+  let difference = 0;
+  for (let index = 0; index < expected.length; index++) difference |= expected.charCodeAt(index) ^ signature.charCodeAt(index);
+  return difference === 0;
+}
+
 function doPost(e) {
   try {
-    const body = JSON.parse(e.parameter.payload || '{}');
+    const parameters = (e && e.parameter) || {};
+    if (!hasValidSignature_(parameters)) return json_({ ok: false, error: 'Unauthorized' });
+    const body = JSON.parse(parameters.payload);
+    if (!Number.isFinite(body.issued_at) || Math.abs(Date.now() - body.issued_at) > 5 * 60 * 1000) return json_({ ok: false, error: 'Request expired' });
     const action = body.action || 'submit';
     const email = normalizeEmail_(body.email);
     if (!email) return json_({ ok: false, error: 'Email không hợp lệ.' });
+    const googleSubHash = String(body.google_sub_hash || '').toLowerCase();
+    if (!/^[a-f0-9]{64}$/.test(googleSubHash)) return json_({ ok: false, error: 'Google account không hợp lệ.' });
     if (action === 'check_email') {
       const sheet = getSheet_();
-      if (emailExists_(sheet, email)) return json_({ ok: false, error: 'Email này đã tham gia khảo sát.' });
+      if (identityExists_(sheet, email, googleSubHash)) return json_({ ok: false, error: 'Email này đã tham gia khảo sát.' });
       return json_({ ok: true });
     }
     if (action !== 'submit') return json_({ ok: false, error: 'Unknown action' });
@@ -130,9 +155,9 @@ function doPost(e) {
       const sheet = getSheet_();
       const values = sheet.getDataRange().getValues();
       const responseIdColumn = HEADERS.indexOf('response_id');
-      if (values.slice(1).some(function(row) { return String(row[responseIdColumn]) === responseId && normalizeEmail_(row[HEADERS.length - 1]) === email; })) return json_({ ok: true, response_id: responseId, duplicate: true });
-      if (emailExists_(sheet, email)) return json_({ ok: false, error: 'Email này đã tham gia khảo sát.' });
-      const row = [new Date(), responseId, SURVEY_VERSION, status].concat(FIELDS.map(function(field) { return Array.isArray(answers[field]) ? answers[field].join(' | ') : answers[field] || ''; }), [email]);
+      if (values.slice(1).some(function(row) { return String(row[responseIdColumn]) === responseId && normalizeEmail_(row[HEADERS.indexOf('email')]) === email && row[HEADERS.indexOf('google_sub_hash')] === googleSubHash; })) return json_({ ok: true, response_id: responseId, duplicate: true });
+      if (identityExists_(sheet, email, googleSubHash)) return json_({ ok: false, error: 'Email này đã tham gia khảo sát.' });
+      const row = [new Date(), responseId, SURVEY_VERSION, status].concat(FIELDS.map(function(field) { return Array.isArray(answers[field]) ? answers[field].join(' | ') : answers[field] || ''; }), [googleSubHash, email]);
       sheet.appendRow(row);
       return json_({ ok: true, response_id: responseId });
     } finally {
@@ -163,7 +188,7 @@ function doGet(e) {
   try {
     const action = String(e.parameter.action || 'responses');
     const sheet = getSheet_();
-    if (action === 'responses') return json_({ ok: true, columns: FIELDS.concat(['email']), rows: rows_(sheet) });
+    if (action === 'responses') return json_({ ok: true, columns: FIELDS.concat(['google_sub_hash', 'email']), rows: rows_(sheet) });
     if (action === 'delete') {
       const responseId = String(e.parameter.response_id || '');
       const values = sheet.getDataRange().getValues();
