@@ -1,18 +1,19 @@
 const SPREADSHEET_ID = '1iMVTEqfeiyodXZGDSgeaj4rqoL1EMzzqBW9CyzZ0bnQ';
 const SHEET_NAME = 'Responses_v2';
 const ADMIN_TOKEN = 'admin123';
-const SURVEY_VERSION = 'v2.1';
+const SURVEY_VERSION = 'v2.3';
 const FIELDS = [
   'S1','D1','D2',
   'Q1_1','Q1_2','Q1_3','Q1_4','Q1_5','Q1_6',
   'Q2_1','Q2_2','Q2_3',
   'Q3_1','Q3_2','Q3_3','Q3_4',
   'Q4_1','Q4_2','Q4_3_Opt1','Q4_3_Opt2','Q4_3_Opt3','Q4_3_Opt4','Q4_4','Q4_5',
-  'Q5_1','Q5_2','TL1','TL2','TT1','TT2','YD1','YD2','Feedback'
+  'Q5_1','Q5_2','TL1','TL2','TT1','TT2','YD1','YD2','Feedback','Referral'
 ];
 const HEADERS = ['timestamp', 'response_id', 'survey_version', 'status'].concat(FIELDS, ['email']);
 const LIKERT_FIELDS = ['TL1','TL2','TT1','TT2','YD1','YD2'];
 const REQUIRED_FIELDS = FIELDS.filter(field => field !== 'Feedback');
+const REFERRAL_OPTIONS = ['Dương Quốc Anh','Nguyễn Hoàng Ân','Dương Yến Ngọc','Hoàng Thanh Long','Nguyễn Hà Phương','Lê Thị Như Phương'];
 
 function getSheet_() {
   const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -22,13 +23,26 @@ function getSheet_() {
 }
 
 function authorizeDeployment() {
-  getSheet_();
+  const sheet = getSheet_();
+  if (sheet.getLastRow() < 2) return;
+  const referralRange = sheet.getRange(2, HEADERS.indexOf('Referral') + 1, sheet.getLastRow() - 1, 1);
+  const currentValues = referralRange.getValues();
+  const normalizedValues = currentValues.map(function(row) { return [normalizeReferral_(row[0])]; });
+  if (currentValues.some(function(row, index) { return row[0] !== normalizedValues[index][0]; })) referralRange.setValues(normalizedValues);
 }
 
 function ensureHeaders_(sheet) {
   if (sheet.getMaxColumns() < HEADERS.length) sheet.insertColumnsAfter(sheet.getMaxColumns(), HEADERS.length - sheet.getMaxColumns());
-  if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
-  else if (sheet.getRange(1, HEADERS.length).getValue() !== 'email') sheet.getRange(1, HEADERS.length).setValue('email');
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(HEADERS);
+    return;
+  }
+  const previousEmailColumn = HEADERS.length - 1;
+  if (sheet.getRange(1, previousEmailColumn).getValue() === 'email' && sheet.getRange(1, HEADERS.length).getValue() !== 'email') {
+    sheet.insertColumnBefore(previousEmailColumn);
+  }
+  sheet.getRange(1, previousEmailColumn).setValue('Referral');
+  sheet.getRange(1, HEADERS.length).setValue('email');
 }
 
 function normalizeEmail_(value) {
@@ -49,11 +63,21 @@ function asArray_(value) {
   return Array.isArray(value) ? value : value === undefined || value === null || value === '' ? [] : [value];
 }
 
+function normalizeReferral_(value) {
+  const selection = String(value || '').trim();
+  for (let index = 0; index < REFERRAL_OPTIONS.length; index++) {
+    const name = REFERRAL_OPTIONS[index];
+    if (selection === String.fromCharCode(65 + index) + '. ' + name) return name;
+  }
+  return selection;
+}
+
 function cleanAnswers_(input) {
   const answers = {};
   FIELDS.forEach(function(field) {
     const values = asArray_(input[field]).map(String).map(function(value) { return value.trim(); }).filter(Boolean);
-    if (values.length) answers[field] = values.length === 1 ? values[0] : values;
+    if (values.length === 1) answers[field] = field === 'Referral' ? normalizeReferral_(values[0]) : values[0];
+    else if (values.length > 1) answers[field] = values;
   });
   return answers;
 }
@@ -69,6 +93,12 @@ function validate_(answers, status) {
   }
   const ranks = ['Q4_3_Opt1','Q4_3_Opt2','Q4_3_Opt3','Q4_3_Opt4'].map(function(field) { return Number(answers[field]); });
   if (ranks.some(function(value) { return !Number.isInteger(value) || value < 1 || value > 4; }) || new Set(ranks).size !== 4) return 'Invalid ranking';
+  for (const field of ['Q4_4','Q4_5']) {
+    const choices = asArray_(answers[field]);
+    if (choices.length > 3) return 'Chỉ được chọn tối đa 3 đáp án ở câu ' + field.replace('_', '.') + '.';
+  }
+  if (asArray_(answers.Q4_5).includes('Không muốn tương tác') && asArray_(answers.Q4_5).length !== 1) return 'Câu 4.5 chỉ được chọn một trong các đáp án loại trừ.';
+  if (!REFERRAL_OPTIONS.includes(answers.Referral)) return 'Vui lòng chọn người gửi khảo sát.';
   return '';
 }
 
