@@ -499,8 +499,10 @@
                     <label class="block font-semibold text-gray-900 mb-2">Ý kiến đóng góp khác của Bạn nhằm giúp dự án phục vụ sinh viên tốt hơn (Không bắt buộc):</label>
                     <textarea name="Feedback" rows="4" class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Nhập ý kiến của bạn..."></textarea>
                 </div>
+            </section>
 
-                <div class="question-group mt-8" data-required="true" data-type="radio" id="q_referral">
+            <section id="step-9" class="survey-card" data-title="">
+                <div class="question-group" data-required="true" data-type="radio" id="q_referral">
                     <label class="block font-semibold text-gray-900 mb-3 text-lg">Cuối cùng, Bạn nhận khảo sát này từ ai? <span class="text-red-500">*</span></label>
                     <label class="custom-option"><input type="radio" name="Referral" value="Dương Quốc Anh"><span class="option-content">A. Dương Quốc Anh</span></label>
                     <label class="custom-option"><input type="radio" name="Referral" value="Nguyễn Hoàng Ân"><span class="option-content">B. Nguyễn Hoàng Ân</span></label>
@@ -512,7 +514,7 @@
                 </div>
             </section>
 
-            <section id="step-9" class="survey-card text-center" data-title="Hoàn tất khảo sát">
+            <section id="step-10" class="survey-card text-center" data-title="Hoàn tất khảo sát">
                 <div class="py-8">
                     <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -568,7 +570,7 @@
         let surveyResponseId = null;
 
         let currentStep = 0;
-        const totalSteps = 9; // steps 1 to 9 are the main flow
+        const totalSteps = 10; // steps 1 to 10 are the main flow
 
         // Khởi tạo các sự kiện giới hạn Checkbox
         document.addEventListener('DOMContentLoaded', () => {
@@ -712,7 +714,7 @@
                 document.getElementById('progress-percent').innerText = `${percent}%`;
 
                 const title = document.getElementById(`step-${step}`).getAttribute('data-title');
-                if(title) document.getElementById('progress-text').innerText = title;
+                if (title !== null) document.getElementById('progress-text').innerText = title;
 
                 // Nút Footer
                 if (step === 1) {
