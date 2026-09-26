@@ -19,7 +19,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Custom Radio & Checkbox styling for better mobile tap targets */
         .custom-option {
             display: flex; align-items: flex-start; padding: 12px 16px; margin-bottom: 12px;
             background-color: white; border: 1px solid #d1d5db; border-radius: 8px;
@@ -30,13 +29,11 @@
         .custom-option:has(input:checked) { border-color: #4338ca; background-color: #eef2ff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .custom-option input { margin-top: 4px; margin-right: 12px; transform: scale(1.2); accent-color: #4338ca; }
 
-        /* Likert Scale Responsive Styling */
         .likert-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; text-align: center; margin-top: 10px; }
         .likert-option { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
         .likert-option:hover { border-color: #6366f1; background-color: #eef2ff; }
         .likert-option:has(input:checked) { background: #4338ca; color: white; border-color: #4338ca; }
         .likert-option input { display: none; }
-        .likert-label-text { font-size: 0.75rem; margin-top: 4px; line-height: 1.1; }
 
         .error-message { color: #ef4444; font-size: 0.875rem; margin-top: 4px; display: none; }
         .has-error .error-message { display: block; }
@@ -106,11 +103,6 @@
                         <label class="custom-option"><input type="radio" name="S1" value="Không có nhu cầu"><span class="option-content">Không có nhu cầu</span></label>
                         <div class="error-message">Vui lòng chọn một đáp án.</div>
                     </div>
-
-                    <div class="flex gap-3">
-                        <button type="button" onclick="prevStep()" class="flex-1 border border-gray-300 text-gray-700 font-semibold py-3 rounded-lg hover:bg-gray-50 transition-colors">QUAY LẠI</button>
-                        <button type="button" onclick="nextStep()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition-colors">TIẾP TỤC</button>
-                    </div>
                 </div>
             </section>
 
@@ -123,23 +115,18 @@
                         <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 1"><span class="option-content">Sinh viên năm 1</span></label>
                         <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 2"><span class="option-content">Sinh viên năm 2</span></label>
                         <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 3"><span class="option-content">Sinh viên năm 3</span></label>
-                        <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 4 / Chuẩn bị tốt nghiệp"><span class="option-content">Sinh viên năm 4 / Chuẩn bị tốt nghiệp</span></label>
+                        <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 4"><span class="option-content">Sinh viên năm 4 / Chuẩn bị tốt nghiệp</span></label>
                         <label class="custom-option"><input type="radio" name="D1" value="Khác"><span class="option-content">Khác (Học viên sau đại học / Cựu sinh viên)</span></label>
                         <div class="error-message">Vui lòng chọn một đáp án.</div>
                     </div>
 
                     <div class="question-group mb-8" data-required="true" data-type="radio" id="q_D2">
                         <label class="block font-semibold text-gray-900 mb-3 text-lg">D2. Ngân sách trung bình Bạn chi trả cho giáo trình, sách tham khảo và đồ dùng học tập trong một học kỳ? <span class="text-red-500">*</span></label>
-                        <label class="custom-option"><input type="radio" name="D2" value="Dưới 200.000 vnđ"><span class="option-content">Dưới 200.000 vnđ</span></label>
-                        <label class="custom-option"><input type="radio" name="D2" value="Từ 200.000 – 400.000 vnđ"><span class="option-content">Từ 200.000 – 400.000 vnđ</span></label>
-                        <label class="custom-option"><input type="radio" name="D2" value="Từ 401.000 – 600.000 vnđ"><span class="option-content">Từ 401.000 – 600.000 vnđ</span></label>
-                        <label class="custom-option"><input type="radio" name="D2" value="Trên 600.000 vnđ"><span class="option-content">Trên 600.000 vnđ</span></label>
+                        <label class="custom-option"><input type="radio" name="D2" value="Dưới 200.000"><span class="option-content">Dưới 200.000 vnđ</span></label>
+                        <label class="custom-option"><input type="radio" name="D2" value="200.000-400.000"><span class="option-content">Từ 200.000 – 400.000 vnđ</span></label>
+                        <label class="custom-option"><input type="radio" name="D2" value="401.000-600.000"><span class="option-content">Từ 401.000 – 600.000 vnđ</span></label>
+                        <label class="custom-option"><input type="radio" name="D2" value="Trên 600.000"><span class="option-content">Trên 600.000 vnđ</span></label>
                         <div class="error-message">Vui lòng chọn một đáp án.</div>
-                    </div>
-
-                    <div class="flex gap-3">
-                        <button type="button" onclick="prevStep()" class="flex-1 border border-gray-300 text-gray-700 font-semibold py-3 rounded-lg hover:bg-gray-50 transition-colors">QUAY LẠI</button>
-                        <button type="button" onclick="nextStep()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition-colors">TIẾP TỤC</button>
                     </div>
                 </div>
             </section>
@@ -147,23 +134,39 @@
         </form>
     </main>
 
+    <footer id="footer-nav" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 hidden shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40">
+        <div class="max-w-3xl mx-auto flex justify-between gap-4">
+            <button type="button" onclick="prevStep()" class="flex-1 py-3 px-4 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition">
+                ← QUAY LẠI
+            </button>
+            <button type="button" onclick="nextStep()" class="flex-1 py-3 px-4 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition shadow-md">
+                TIẾP TỤC →
+            </button>
+        </div>
+    </footer>
+
     <script>
         let currentStep = 0;
+        const totalSteps = 3;
         let surveyData = { response_id: '', answers: {} };
         let googleAccount = null;
 
-        // Generate unique response ID
         function generateResponseId() {
-            const timestamp = Date.now().toString(36).toUpperCase();
-            const random = Math.random().toString(36).substring(2, 10).toUpperCase();
-            return `SRV-${timestamp}${random}`.substring(0, 24);
+            const part1 = Date.now().toString(36).toUpperCase().slice(-8);
+            const part2 = Math.random().toString(36).substring(2, 12).toUpperCase();
+            return `SRV-${part1}${part2}`;
         }
 
-        // Initialize Google Sign-In
         function initGoogleSignIn() {
+            if (!window.google || !window.google.accounts) {
+                setTimeout(initGoogleSignIn, 500);
+                return;
+            }
+
             fetch('/api/auth/config')
                 .then(r => r.json())
                 .then(config => {
+                    console.log('Config received:', config);
                     if (!config.ok || !config.client_id) {
                         showAuthError('Không thể cấu hình đăng nhập Google. Vui lòng thử lại sau.');
                         return;
@@ -191,8 +194,8 @@
                 });
         }
 
-        // Handle Google Sign-In response
         async function handleGoogleSignIn(response) {
+            console.log('Google response:', response);
             if (!response.credential) {
                 showAuthError('Đăng nhập không thành công. Vui lòng thử lại.');
                 return;
@@ -206,6 +209,7 @@
                 });
 
                 const data = await res.json();
+                console.log('Auth response:', res.status, data);
 
                 if (!res.ok || !data.ok) {
                     showAuthError(data.error || 'Đăng nhập không thành công.');
@@ -217,17 +221,19 @@
                 document.getElementById('btn-start').disabled = false;
                 clearAuthError();
                 surveyData.response_id = generateResponseId();
+                console.log('Login successful. Response ID:', surveyData.response_id);
             } catch (err) {
                 console.error('Auth error:', err);
                 showAuthError('Lỗi kết nối. Vui lòng thử lại sau.');
             }
         }
 
-        // Switch Google Account
         function switchGoogleAccount() {
             googleAccount = null;
             document.getElementById('google-account').classList.add('hidden');
             document.getElementById('btn-start').disabled = true;
+            document.getElementById('google-signin-button').innerHTML = '';
+            
             google.accounts.id.renderButton(
                 document.getElementById('google-signin-button'),
                 { theme: 'outline', size: 'large', width: '300', text: 'signin_with' }
@@ -251,24 +257,9 @@
             errorEl.classList.add('hidden');
         }
 
-        function nextStep() {
-            if (!validateStep(currentStep)) return;
-            currentStep++;
-            if (currentStep >= document.querySelectorAll('.survey-card').length) {
-                submitSurvey();
-            } else {
-                updateView();
-            }
-        }
-
-        function prevStep() {
-            if (currentStep > 0) {
-                currentStep--;
-                updateView();
-            }
-        }
-
         function validateStep(step) {
+            if (step === 0) return true;
+
             const card = document.getElementById(`step-${step}`);
             if (!card) return true;
             
@@ -277,33 +268,20 @@
 
             groups.forEach(group => {
                 const type = group.dataset.type;
-                const name = group.querySelector(`input[type="${type}"]`)?.name;
-                let selected;
+                const inputs = group.querySelectorAll(`input[type="${type}"]`);
+                if (inputs.length === 0) return;
+
+                const name = inputs[0].name;
+                const checked = group.querySelector(`input[type="${type}"][name="${name}"]:checked`);
 
                 if (type === 'radio') {
-                    selected = card.querySelector(`input[type="radio"][name="${name}"]:checked`);
-                } else if (type === 'checkbox') {
-                    selected = card.querySelectorAll(`input[type="checkbox"][name="${name}"]:checked`);
-                    const max = parseInt(group.dataset.max) || 0;
-                    if (max && selected.length > max) {
+                    if (!checked) {
                         group.classList.add('has-error');
                         valid = false;
-                        return;
-                    }
-                    selected = selected.length > 0 ? [1] : [];
-                }
-
-                if (selected && selected.length > 0) {
-                    group.classList.remove('has-error');
-                    if (type === 'radio') {
-                        surveyData.answers[name] = selected.value;
                     } else {
-                        surveyData.answers[name] = Array.from(card.querySelectorAll(`input[type="checkbox"][name="${name}"]:checked`))
-                            .map(el => el.value);
+                        group.classList.remove('has-error');
+                        surveyData.answers[name] = checked.value;
                     }
-                } else {
-                    group.classList.add('has-error');
-                    valid = false;
                 }
             });
 
@@ -314,16 +292,61 @@
             document.querySelectorAll('.survey-card').forEach((card, i) => {
                 card.classList.toggle('active', i === currentStep);
             });
-            updateProgress();
+            
+            const footer = document.getElementById('footer-nav');
+            if (currentStep === 0 || currentStep >= totalSteps) {
+                footer.classList.add('hidden');
+            } else {
+                footer.classList.remove('hidden');
+            }
+
+            if (currentStep > 0) {
+                const percent = Math.round((currentStep / totalSteps) * 100);
+                document.getElementById('progress-bar').style.width = percent + '%';
+                document.getElementById('progress-percent').textContent = percent + '%';
+                document.getElementById('header').classList.remove('hidden');
+            } else {
+                document.getElementById('header').classList.add('hidden');
+            }
+
             window.scrollTo(0, 0);
         }
 
-        function updateProgress() {
-            const total = document.querySelectorAll('.survey-card').length;
-            const percent = Math.round((currentStep / total) * 100);
-            document.getElementById('progress-bar').style.width = percent + '%';
-            document.getElementById('progress-percent').textContent = percent + '%';
-            document.getElementById('header').classList.toggle('hidden', currentStep === 0);
+        function nextStep() {
+            if (currentStep === 0) {
+                if (!googleAccount) {
+                    showAuthError('Vui lòng đăng nhập Google trước khi bắt đầu.');
+                    return;
+                }
+                currentStep++;
+                updateView();
+                return;
+            }
+
+            if (!validateStep(currentStep)) return;
+
+            if (currentStep === 1) {
+                const s1 = document.querySelector('input[name="S1"]:checked');
+                if (s1 && s1.value === "Không có nhu cầu") {
+                    alert('Cảm ơn bạn! Bạn không nằm trong nhóm đối tượng mục tiêu của khảo sát này.');
+                    location.reload();
+                    return;
+                }
+            }
+
+            currentStep++;
+            if (currentStep >= totalSteps) {
+                submitSurvey();
+            } else {
+                updateView();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateView();
+            }
         }
 
         async function submitSurvey() {
@@ -331,6 +354,9 @@
                 alert('Vui lòng đăng nhập Google.');
                 return;
             }
+
+            const submitBtn = document.querySelector('button[onclick="nextStep()"]');
+            if (submitBtn) submitBtn.disabled = true;
 
             try {
                 const res = await fetch('/api/submit', {
@@ -343,10 +369,11 @@
                 });
 
                 const data = await res.json();
+                console.log('Submit response:', res.status, data);
 
                 if (!res.ok || !data.ok) {
                     if (res.status === 409) {
-                        alert('Tài khoản Google này đã tham gia khảo sát rồi.');
+                        alert('Tài khoản Google này đã tham gia khảo sát rồi!');
                     } else {
                         alert(data.error || 'Không thể gửi khảo sát.');
                     }
@@ -354,7 +381,7 @@
                 }
 
                 alert('Cảm ơn bạn đã tham gia khảo sát! Dữ liệu đã được lưu.');
-                await fetch('/api/logout', { method: 'POST' });
+                await fetch('/api/logout', { method: 'POST' }).catch(() => {});
                 location.reload();
             } catch (err) {
                 console.error('Submit error:', err);
@@ -362,10 +389,9 @@
             }
         }
 
-        // Initialize on load
         window.addEventListener('load', () => {
             initGoogleSignIn();
-            updateProgress();
+            updateView();
         });
     </script>
 </body>
