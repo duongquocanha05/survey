@@ -25,7 +25,7 @@ function getSheet_() {
 function authorizeDeployment() {
   const sheet = getSheet_();
   if (sheet.getLastRow() < 2) return;
-  const referralRange = sheet.getRange(2, HEADERS.indexOf('Referral') + 1, sheet.getLastRow() - 1, 1);
+  const referralRange = sheet.getRange(2, getHeaderMap_(sheet).Referral + 1, sheet.getLastRow() - 1, 1);
   const currentValues = referralRange.getValues();
   const normalizedValues = currentValues.map(function(row) { return [normalizeReferral_(row[0])]; });
   if (currentValues.some(function(row, index) { return row[0] !== normalizedValues[index][0]; })) referralRange.setValues(normalizedValues);
@@ -37,7 +37,7 @@ function ensureHeaders_(sheet) {
     sheet.appendRow(HEADERS);
     return;
   }
-  let headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  let headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(function(value) { return String(value).trim(); });
   if (!headers.includes('email')) throw new Error('Missing email column');
   for (const field of ['Referral', 'google_sub_hash']) {
     if (!headers.includes(field)) {
@@ -47,7 +47,18 @@ function ensureHeaders_(sheet) {
       headers.splice(column - 1, 0, field);
     }
   }
-  if (HEADERS.some(function(header, index) { return headers[index] !== header; })) throw new Error('Unexpected sheet headers');
+  const missing = HEADERS.filter(function(header) { return !headers.includes(header); });
+  if (missing.length) throw new Error('Missing sheet headers: ' + missing.join(', '));
+  const duplicated = HEADERS.filter(function(header) { return headers.filter(function(value) { return value === header; }).length > 1; });
+  if (duplicated.length) throw new Error('Duplicate sheet headers: ' + duplicated.join(', '));
+}
+
+function getHeaderMap_(sheet) {
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(function(value) { return String(value).trim(); });
+  return HEADERS.reduce(function(map, header) {
+    map[header] = headers.indexOf(header);
+    return map;
+  }, {});
 }
 
 function normalizeEmail_(value) {
@@ -61,10 +72,9 @@ function normalizeEmail_(value) {
 function identityExists_(sheet, email, googleSubHash) {
   const lastRow = sheet.getLastRow();
   if (lastRow < 2) return false;
-  const emailColumn = HEADERS.indexOf('email');
-  const subjectColumn = HEADERS.indexOf('google_sub_hash');
-  return sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues()
-    .some(function(row) { return normalizeEmail_(row[emailColumn]) === email || row[subjectColumn] === googleSubHash; });
+  const columns = getHeaderMap_(sheet);
+  return sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues()
+    .some(function(row) { return normalizeEmail_(row[columns.email]) === email || row[columns.google_sub_hash] === googleSubHash; });
 }
 
 function asArray_(value) {
@@ -127,9 +137,11 @@ function hasValidSignature_(parameters) {
 }
 
 function doPost(e) {
+  let signed = false;
   try {
     const parameters = (e && e.parameter) || {};
     if (!hasValidSignature_(parameters)) return json_({ ok: false, error: 'Unauthorized' });
+    signed = true;
     const body = JSON.parse(parameters.payload);
     if (!Number.isFinite(body.issued_at) || Math.abs(Date.now() - body.issued_at) > 5 * 60 * 1000) return json_({ ok: false, error: 'Request expired' });
     const action = body.action || 'submit';
@@ -154,17 +166,21 @@ function doPost(e) {
     try {
       const sheet = getSheet_();
       const values = sheet.getDataRange().getValues();
-      const responseIdColumn = HEADERS.indexOf('response_id');
-      if (values.slice(1).some(function(row) { return String(row[responseIdColumn]) === responseId && normalizeEmail_(row[HEADERS.indexOf('email')]) === email && row[HEADERS.indexOf('google_sub_hash')] === googleSubHash; })) return json_({ ok: true, response_id: responseId, duplicate: true });
+      const columns = getHeaderMap_(sheet);
+      if (values.slice(1).some(function(row) { return String(row[columns.response_id]) === responseId && normalizeEmail_(row[columns.email]) === email && row[columns.google_sub_hash] === googleSubHash; })) return json_({ ok: true, response_id: responseId, duplicate: true });
       if (identityExists_(sheet, email, googleSubHash)) return json_({ ok: false, error: 'Email này đã tham gia khảo sát.' });
-      const row = [new Date(), responseId, SURVEY_VERSION, status].concat(FIELDS.map(function(field) { return Array.isArray(answers[field]) ? answers[field].join(' | ') : answers[field] || ''; }), [googleSubHash, email]);
+      const item = { timestamp: new Date(), response_id: responseId, survey_version: SURVEY_VERSION, status: status, google_sub_hash: googleSubHash, email: email };
+      FIELDS.forEach(function(field) { item[field] = Array.isArray(answers[field]) ? answers[field].join(' | ') : answers[field] || ''; });
+      const row = Array(sheet.getLastColumn()).fill('');
+      HEADERS.forEach(function(header) { row[columns[header]] = item[header]; });
       sheet.appendRow(row);
       return json_({ ok: true, response_id: responseId });
     } finally {
       lock.releaseLock();
     }
   } catch (error) {
-    return json_({ ok: false, error: 'Unable to save response' });
+    console.error(error && error.stack ? error.stack : error);
+    return json_({ ok: false, error: 'Unable to save response', detail: signed ? String(error && error.message ? error.message : error) : '' });
   }
 }
 
@@ -175,9 +191,11 @@ function authorized_(e) {
 function rows_(sheet) {
   const values = sheet.getDataRange().getValues();
   if (values.length < 2) return [];
+  const columns = getHeaderMap_(sheet);
   return values.slice(1).map(function(row) {
-    return HEADERS.reduce(function(item, header, index) {
-      item[header] = row[index] instanceof Date ? Utilities.formatDate(row[index], Session.getScriptTimeZone() || 'Asia/Ho_Chi_Minh', 'yyyy-MM-dd HH:mm:ss') : row[index];
+    return HEADERS.reduce(function(item, header) {
+      const value = row[columns[header]];
+      item[header] = value instanceof Date ? Utilities.formatDate(value, Session.getScriptTimeZone() || 'Asia/Ho_Chi_Minh', 'yyyy-MM-dd HH:mm:ss') : value;
       return item;
     }, {});
   });
@@ -192,7 +210,7 @@ function doGet(e) {
     if (action === 'delete') {
       const responseId = String(e.parameter.response_id || '');
       const values = sheet.getDataRange().getValues();
-      const responseIdColumn = HEADERS.indexOf('response_id');
+      const responseIdColumn = getHeaderMap_(sheet).response_id;
       for (let index = values.length - 1; index >= 1; index--) {
         if (String(values[index][responseIdColumn]) === responseId) {
           sheet.deleteRow(index + 1);

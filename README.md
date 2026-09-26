@@ -14,7 +14,7 @@ Tạo hai chuỗi ngẫu nhiên **khác nhau**, mỗi chuỗi ít nhất 32 ký 
 
 1. Trong Apps Script gắn với Google Sheet hiện tại, thay toàn bộ mã bằng [google-apps-script/Code.gs](google-apps-script/Code.gs), rồi lưu.
 2. Vào **Project Settings > Script properties**, tạo thuộc tính `SURVEY_SHARED_SECRET` với giá trị **giống hệt** `GAS_SHARED_SECRET` sẽ đặt trên Render.
-3. Chạy hàm `authorizeDeployment` một lần và cấp quyền nếu Google yêu cầu. Hàm tự thêm cột `google_sub_hash` trước `email` trong `Responses_v2`, giữ nguyên email và phản hồi cũ.
+3. Chạy hàm `authorizeDeployment` một lần và cấp quyền nếu Google yêu cầu. Hàm tự thêm cột `google_sub_hash` trước `email` nếu chưa có; nếu các cột đã được đổi chỗ, mã tìm theo tên tiêu đề và giữ nguyên thứ tự cột, email và phản hồi cũ.
 4. Chọn **Deploy > Manage deployments > Edit > New version > Deploy** trên Web app đang dùng. URL `/exec` cũ không đổi. Web app tiếp tục **Execute as: Me** và **Who has access: Anyone**; các yêu cầu khảo sát không có chữ ký giờ bị từ chối.
 
 ## 3. Cấu hình Render
