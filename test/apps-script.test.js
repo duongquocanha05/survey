@@ -39,6 +39,7 @@ class Sheet {
 function setup(oldRows = [], headerOrder) {
   let sheet;
   const context = vm.createContext({
+    console: { error() {} },
     PropertiesService: { getScriptProperties: () => ({ getProperty: name => name === 'SURVEY_SHARED_SECRET' ? SECRET : null }) },
     Utilities: {
       Charset: { UTF_8: 'UTF-8' },
@@ -85,6 +86,16 @@ test('unsigned and expired Apps Script requests are rejected', () => {
   const body = { action: 'submit', email: 'new@gmail.com', google_sub_hash: 'a'.repeat(64), response_id: 'SRV-ABCDEF12', answers };
   assert.equal(call(body, false).error, 'Unauthorized');
   assert.equal(call({ ...body, issued_at: Date.now() - 10 * 60 * 1000 }).error, 'Request expired');
+});
+
+test('signed Apps Script failures include a diagnostic detail without accepting unsigned requests', () => {
+  const { context, call } = setup();
+  context.SpreadsheetApp.openById = () => { throw new Error('Spreadsheet access denied for test'); };
+  const body = { action: 'check_email', email: 'new@gmail.com', google_sub_hash: 'a'.repeat(64) };
+  assert.equal(call(body, false).error, 'Unauthorized');
+  const result = call(body);
+  assert.equal(result.error, 'Unable to save response');
+  assert.equal(result.detail, 'Spreadsheet access denied for test');
 });
 
 test('signed submissions keep one response per email and Google account', () => {

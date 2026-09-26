@@ -137,9 +137,11 @@ function hasValidSignature_(parameters) {
 }
 
 function doPost(e) {
+  let signed = false;
   try {
     const parameters = (e && e.parameter) || {};
     if (!hasValidSignature_(parameters)) return json_({ ok: false, error: 'Unauthorized' });
+    signed = true;
     const body = JSON.parse(parameters.payload);
     if (!Number.isFinite(body.issued_at) || Math.abs(Date.now() - body.issued_at) > 5 * 60 * 1000) return json_({ ok: false, error: 'Request expired' });
     const action = body.action || 'submit';
@@ -177,7 +179,8 @@ function doPost(e) {
       lock.releaseLock();
     }
   } catch (error) {
-    return json_({ ok: false, error: 'Unable to save response' });
+    console.error(error && error.stack ? error.stack : error);
+    return json_({ ok: false, error: 'Unable to save response', detail: signed ? String(error && error.message ? error.message : error) : '' });
   }
 }
 
