@@ -86,6 +86,7 @@
                         <button type="button" onclick="switchGoogleAccount()" class="mt-2 text-sm font-semibold text-indigo-700 underline">Đổi tài khoản</button>
                     </div>
                     <p class="text-sm text-gray-500 mt-2">Mỗi tài khoản Google chỉ được gửi khảo sát một lần.</p>
+                    <p id="google-chooser-help" class="text-sm text-gray-500 mt-1">Nhấn nút Google rồi chọn “Sử dụng tài khoản khác” nếu muốn dùng email khác. Không cần đổi tài khoản Chrome.</p>
                     <p id="auth-error" class="hidden text-red-600 text-sm mt-2"></p>
                 </div>
                 <button type="button" id="btn-start" onclick="nextStep()" disabled class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-xl transition shadow-md text-lg">
@@ -681,6 +682,7 @@
             document.getElementById('google-email').textContent = activeEmail;
             document.getElementById('google-account').classList.remove('hidden');
             document.getElementById('google-signin-button').classList.add('hidden');
+            document.getElementById('google-chooser-help').classList.add('hidden');
             document.getElementById('btn-start').disabled = false;
             showAuthError('');
             if (pendingResumeAccount === activeAccountKey) {
@@ -708,12 +710,19 @@
             }
         }
 
+        function renderGoogleButton() {
+            const container = document.getElementById('google-signin-button');
+            container.replaceChildren();
+            // Google does not personalize medium/small buttons with the last-used account.
+            google.accounts.id.renderButton(container, { theme: 'outline', size: 'medium', text: 'signin_with', width: 280 });
+        }
+
         async function initializeGoogleLogin() {
             try {
                 const config = await apiRequest('/api/auth/config');
                 if (!window.google?.accounts?.id) throw new Error('Không tải được nút đăng nhập Google. Vui lòng tải lại trang.');
-                google.accounts.id.initialize({ client_id: config.client_id, callback: handleGoogleCredential, auto_select: false });
-                google.accounts.id.renderButton(document.getElementById('google-signin-button'), { theme: 'outline', size: 'large', text: 'signin_with', width: 280 });
+                google.accounts.id.initialize({ client_id: config.client_id, callback: handleGoogleCredential, auto_select: false, button_auto_select: false, use_fedcm_for_button: false });
+                renderGoogleButton();
                 try {
                     const session = await apiRequest('/api/session');
                     setAuthenticatedAccount(session);
@@ -734,6 +743,7 @@
                 return;
             }
             google.accounts.id.disableAutoSelect();
+            renderGoogleButton();
             document.getElementById('surveyForm').reset();
             document.querySelectorAll('#surveyForm input[type="checkbox"]').forEach(input => input.disabled = false);
             document.querySelectorAll('#surveyForm input[type="text"]').forEach(input => input.classList.add('hidden'));
@@ -744,6 +754,7 @@
             pendingResumeStep = 0;
             document.getElementById('google-account').classList.add('hidden');
             document.getElementById('google-signin-button').classList.remove('hidden');
+            document.getElementById('google-chooser-help').classList.remove('hidden');
             document.getElementById('btn-start').disabled = true;
             currentStep = 0;
             showStep(0);
@@ -1028,6 +1039,7 @@
                     activeAccountKey = '';
                     document.getElementById('google-account').classList.add('hidden');
                     document.getElementById('google-signin-button').classList.remove('hidden');
+                    document.getElementById('google-chooser-help').classList.remove('hidden');
                     document.getElementById('btn-start').disabled = true;
                     currentStep = 0;
                     showStep(0);
