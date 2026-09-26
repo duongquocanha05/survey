@@ -6,7 +6,7 @@
     <title>Khảo Sát: Trạm Ký Gửi Giáo Trình Cũ</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://accounts.google.com/gsi/client" defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -32,7 +32,8 @@
 
         /* Likert Scale Responsive Styling */
         .likert-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; text-align: center; margin-top: 10px; }
-        .likert-option { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; }
+        .likert-option { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .likert-option:hover { border-color: #6366f1; background-color: #eef2ff; }
         .likert-option:has(input:checked) { background: #4338ca; color: white; border-color: #4338ca; }
         .likert-option input { display: none; }
         .likert-label-text { font-size: 0.75rem; margin-top: 4px; line-height: 1.1; }
@@ -70,8 +71,8 @@
                 </div>
                 <div class="text-gray-600 space-y-4 text-sm md:text-base leading-relaxed mb-8">
                     <p><strong>Kính chào Bạn!</strong></p>
-                    <p>Chúng mình là <strong>Nhóm 8</strong> môn Lập và Thẩm định Dự án Đầu tư tại Trường Đại học Kinh tế - Luật, ĐHQG-TP.HCM, hiện đang thực hiện nghiên cứu dự án <em>“Trạm Ký Gửi và Nâng Cấp Giáo Trình, Đồ Dùng Cũ Sinh Viên”</em>.</p>
-                    <p>Nhận thấy nhu cầu thanh lý đồ đạc cuối kỳ và mua sắm đồ dùng giá rẻ đầu năm học của sinh viên rất lớn, nhóm triển khai khảo sát này nhằm hoàn thiện mô hình kinh doanh. Mọi sự đóng góp của Bạn sẽ góp phần quan trọng vào sự thành công của dự án.</p>
+                    <p>Chúng mình là <strong>Nhóm 8</strong> môn Lập và Thẩm định Dự án Đầu tư tại Trường Đại học Kinh tế - Luật, ĐHQG-TP.HCM, hiện đang thực hiện một khảo sát thị trường về nhu cầu mua/bán/thanh lý giáo trình và đồ dùng cũ của sinh viên.</p>
+                    <p>Nhận thấy nhu cầu thanh lý đồ đạc cuối kỳ và mua sắm đồ dùng giá rẻ đầu năm học của sinh viên rất lớn, nhóm triển khai khảo sát này nhằm tìm hiểu về thị trường tiềm năng này và lập kế hoạch kinh doanh phù hợp.</p>
                     <p class="p-4 bg-yellow-50 rounded-lg border border-yellow-100 text-yellow-800">
                         🔒 Nhóm cam kết rằng thông tin mà Bạn cung cấp chỉ dành cho mục đích nghiên cứu, các thông tin cá nhân của Bạn sẽ được bảo mật tuyệt đối.
                     </p>
@@ -88,956 +89,284 @@
                     <p class="text-sm text-gray-500 mt-2">Mỗi tài khoản Google chỉ được gửi khảo sát một lần.</p>
                     <p id="auth-error" class="hidden text-red-600 text-sm mt-2"></p>
                 </div>
-                <button type="button" id="btn-start" onclick="nextStep()" disabled class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-xl transition shadow-md text-lg">
+                <button type="button" id="btn-start" onclick="nextStep()" disabled class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors">
                     BẮT ĐẦU KHẢO SÁT
                 </button>
             </section>
 
             <section id="step-1" class="survey-card" data-title="Phần I: Câu hỏi gạn lọc">
-                <div class="mb-6">
-                    <h2 class="text-xl font-bold text-gray-900">PHẦN I: CÂU HỎI GẠN LỌC</h2>
+                <div class="bg-white rounded-2xl shadow-sm p-6 md:p-8">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-gray-900">PHẦN I: CÂU HỎI GẠN LỌC</h2>
+                    </div>
 
-                </div>
+                    <div class="question-group mb-8" data-required="true" data-type="radio" id="q_S1">
+                        <label class="block font-semibold text-gray-900 mb-3 text-lg">Câu S1: Trong vòng 12 tháng qua (hoặc trong thời gian tới), Bạn đã từng hoặc sẽ có nhu cầu mua, bán hoặc thanh lý đồ dùng, giáo trình cũ không? <span class="text-red-500">*</span></label>
+                        <label class="custom-option"><input type="radio" name="S1" value="Có"><span class="option-content">Có (Đã từng hoặc sẽ có nhu cầu)</span></label>
+                        <label class="custom-option"><input type="radio" name="S1" value="Không có nhu cầu"><span class="option-content">Không có nhu cầu</span></label>
+                        <div class="error-message">Vui lòng chọn một đáp án.</div>
+                    </div>
 
-
-
-                <div class="question-group mb-8" data-required="true" data-type="radio" id="q_S1">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">Câu S1: Trong vòng 12 tháng qua (hoặc trong thời gian tới), Bạn đã từng hoặc sẽ có nhu cầu mua, bán, thuê hoặc ký gửi giáo trình và đồ dùng cũ hay không? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="S1" value="Có"><span class="option-content">Có (Đã từng hoặc sẽ có nhu cầu)</span></label>
-                    <label class="custom-option"><input type="radio" name="S1" value="Không có nhu cầu"><span class="option-content">Không có nhu cầu</span></label>
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
+                    <div class="flex gap-3">
+                        <button type="button" onclick="prevStep()" class="flex-1 border border-gray-300 text-gray-700 font-semibold py-3 rounded-lg hover:bg-gray-50 transition-colors">QUAY LẠI</button>
+                        <button type="button" onclick="nextStep()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition-colors">TIẾP TỤC</button>
+                    </div>
                 </div>
             </section>
 
             <section id="step-2" class="survey-card" data-title="Phần II: Thông tin chung">
-                <h2 class="text-xl font-bold text-gray-900 mb-6">PHẦN II: THÔNG TIN CHUNG</h2>
+                <div class="bg-white rounded-2xl shadow-sm p-6 md:p-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">PHẦN II: THÔNG TIN CHUNG</h2>
 
-
-
-                <div class="question-group mb-8" data-required="true" data-type="radio" id="q_D1">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">D1. Bạn hiện đang là sinh viên năm mấy? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 1"><span class="option-content">Sinh viên năm 1</span></label>
-                    <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 2"><span class="option-content">Sinh viên năm 2</span></label>
-                    <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 3"><span class="option-content">Sinh viên năm 3</span></label>
-                    <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 4 / Chuẩn bị tốt nghiệp"><span class="option-content">Sinh viên năm 4 / Chuẩn bị tốt nghiệp</span></label>
-                    <label class="custom-option"><input type="radio" name="D1" value="Khác"><span class="option-content">Khác (Học viên sau đại học / Cựu sinh viên)</span></label>
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
-                </div>
-
-
-
-                <div class="question-group mb-8" data-required="true" data-type="radio" id="q_D2">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">D2. Ngân sách trung bình Bạn chi trả cho giáo trình, sách tham khảo và đồ dùng học tập trong một học kỳ là bao nhiêu? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="D2" value="Dưới 200.000 vnđ"><span class="option-content">Dưới 200.000 vnđ</span></label>
-                    <label class="custom-option"><input type="radio" name="D2" value="Từ 200.000 – 400.000 vnđ"><span class="option-content">Từ 200.000 – 400.000 vnđ</span></label>
-                    <label class="custom-option"><input type="radio" name="D2" value="Từ 401.000 – 600.000 vnđ"><span class="option-content">Từ 401.000 – 600.000 vnđ</span></label>
-                    <label class="custom-option"><input type="radio" name="D2" value="Trên 600.000 vnđ"><span class="option-content">Trên 600.000 vnđ</span></label>
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
-                </div>
-            </section>
-
-            <section id="step-3" class="survey-card" data-title="Phần III (1/5): Cầu và hành vi">
-                <div class="mb-6">
-                    <h2 class="text-xl font-bold text-gray-900 uppercase">PHẦN III: THU THẬP THÔNG TIN CHÍNH</h2>
-                    <h3 class="text-lg font-semibold text-indigo-700 mt-2">Nhóm 1: Cầu và hành vi tiêu dùng</h3>
-                </div>
-
-
-
-                <div class="question-group mb-8" data-required="true" data-type="checkbox" data-max="3" id="q_1_1">
-                    <label class="block font-semibold text-gray-900 mb-1 text-lg">1.1. Bạn thường có nhu cầu mua hoặc bán/thanh lý những loại đồ dùng cũ nào nhất? <span class="text-red-500">*</span></label>
-                    <p class="text-sm text-indigo-600 font-medium mb-3">(Chọn tối đa 3 đáp án)</p>
-                    <label class="custom-option"><input type="checkbox" name="Q1_1" value="Giáo trình gốc, sách tham khảo"><span class="option-content">Giáo trình gốc, sách tham khảo bắt buộc.</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q1_1" value="Đồ dùng sinh hoạt cồng kềnh"><span class="option-content">Đồ dùng sinh hoạt cồng kềnh (Quạt máy, thau chậu, bàn xếp, kệ sách).</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q1_1" value="Thiết bị điện tử nhỏ gọn"><span class="option-content">Thiết bị điện tử nhỏ gọn (Máy tính cầm tay Casio, tai nghe, đèn học).</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q1_1" value="Quần áo, giày dép, đồng phục"><span class="option-content">Quần áo, giày dép cá nhân, đồng phục thể dục/quốc phòng.</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q1_1" value="Đồ trang trí phòng, mỹ phẩm"><span class="option-content">Đồ trang trí phòng, mỹ phẩm chưa dùng hết.</span></label>
-                    <label class="custom-option flex-col items-start">
-                        <div class="flex items-center w-full">
-                            <input type="checkbox" name="Q1_1" value="Khác" onchange="toggleTextInput('Q1_1_other', this.checked)">
-                            <span class="option-content">Khác:</span>
-                        </div>
-                        <input type="text" id="Q1_1_other" class="mt-2 w-full border border-gray-300 rounded-md p-2 text-sm hidden" placeholder="Vui lòng ghi rõ...">
-                    </label>
-                    <div class="error-message">Vui lòng chọn từ 1 đến 3 đáp án.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="radio" id="q_1_2">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">1.2. Trung bình một học kỳ, Bạn có nhu cầu mua hoặc bán bao nhiêu giáo trình/sách tham khảo phục vụ học tập? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_2" value="A. Dưới 3 cuốn"><span class="option-content">A. Dưới 3 cuốn</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_2" value="B. Từ 3 – 5 cuốn"><span class="option-content">B. Từ 3 – 5 cuốn</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_2" value="C. Từ 6 - 8 cuốn"><span class="option-content">C. Từ 6 - 8 cuốn</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_2" value="D. Trên 8 cuốn"><span class="option-content">D. Trên 8 cuốn</span></label>
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="radio" id="q_1_3">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">1.3. Trung bình một năm, Bạn thực hiện mua bán thanh lý bao nhiêu cuốn giáo trình cũ? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_3" value="A. Dưới 3 cuốn"><span class="option-content">A. Dưới 3 cuốn</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_3" value="B. Từ 3 - 5 cuốn"><span class="option-content">B. Từ 3 - 5 cuốn</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_3" value="C. Từ 6 - 8 cuốn"><span class="option-content">C. Từ 6 - 8 cuốn</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_3" value="D. Trên 8 cuốn"><span class="option-content">D. Trên 8 cuốn</span></label>
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="radio" id="q_1_4">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">1.4. Thời điểm nào trong năm học Bạn phát sinh nhu cầu mua hoặc bán/thanh lý giáo trình/đồ dùng cũ cao nhất? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_4" value="A. Đầu mỗi học kỳ"><span class="option-content">A. Đầu mỗi học kỳ (khi bắt đầu môn học mới)</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_4" value="B. Cuối mỗi học kỳ"><span class="option-content">B. Cuối mỗi học kỳ (sau khi thi xong/dọn dẹp ktx/trọ)</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_4" value="C. Cuối năm học, mùa hè"><span class="option-content">C. Cuối năm học, mùa hè (thời điểm sinh viên tốt nghiệp/chuyển phòng)</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_4" value="D. Tùy thời điểm phát sinh nhu cầu"><span class="option-content">D. Tùy thời điểm phát sinh nhu cầu, không cố định</span></label>
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="checkbox" data-max="2" id="q_1_5">
-                    <label class="block font-semibold text-gray-900 mb-1 text-lg">1.5. Lý do chính khiến Bạn lựa chọn mua giáo trình/đồ dùng cũ thay vì mua mới là gì? <span class="text-red-500">*</span></label>
-                    <p class="text-sm text-indigo-600 font-medium mb-3">(Chọn tối đa 2 đáp án)</p>
-                    <label class="custom-option"><input type="checkbox" name="Q1_5" value="Tiết kiệm chi phí"><span class="option-content">Tiết kiệm chi phí</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q1_5" value="Có sẵn ghi chép"><span class="option-content">Mua giáo trình cũ có sẵn ghi chép/lưu ý của người dùng trước</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q1_5" value="Dùng thời gian ngắn"><span class="option-content">Đồ dùng chỉ cần sử dụng trong thời gian ngắn (1-2 học kỳ)</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q1_5" value="Bảo vệ môi trường"><span class="option-content">Bảo vệ môi trường, tái sử dụng tài nguyên</span></label>
-                    <label class="custom-option flex-col items-start">
-                        <div class="flex items-center w-full">
-                            <input type="checkbox" name="Q1_5" value="Khác" onchange="toggleTextInput('Q1_5_other', this.checked)">
-                            <span class="option-content">Khác:</span>
-                        </div>
-                        <input type="text" id="Q1_5_other" class="mt-2 w-full border border-gray-300 rounded-md p-2 text-sm hidden" placeholder="Vui lòng ghi rõ...">
-                    </label>
-                    <div class="error-message">Vui lòng chọn 1 đến 2 đáp án.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="radio" id="q_1_6">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">1.6. Khi lựa chọn mua một cuốn giáo trình cũ, yếu tố nào dưới đây được Bạn ưu tiên nhất? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_6" value="A. Giá thành rẻ nhất có thể"><span class="option-content">A. Giá thành rẻ nhất có thể</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_6" value="B. Độ mới và hình thức sạch sẽ"><span class="option-content">B. Độ mới và hình thức sạch sẽ (không bị rách, không gạch xóa, được vệ sinh/bọc mới)</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_6" value="C. Địa điểm nhận hàng thuận tiện"><span class="option-content">C. Địa điểm nhận hàng thuận tiện, không tốn thời gian hẹn gặp</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_6" value="D. Uy tín của người bán"><span class="option-content">D. Uy tín của người bán</span></label>
-                    <label class="custom-option"><input type="radio" name="Q1_6" value="E. Có đơn vị trung gian đảm bảo"><span class="option-content">E. Có đơn vị trung gian đảm bảo chất lượng và an toàn thanh toán</span></label>
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
-                </div>
-            </section>
-
-            <section id="step-4" class="survey-card" data-title="Phần III (2/5): Phân khúc giá">
-                <h3 class="text-lg font-semibold text-indigo-700 mb-6">Nhóm 2: Phân khúc giá và mức sẵn lòng chi trả</h3>
-
-
-
-
-
-
-
-                <div class="question-group mb-8" data-required="true" data-type="radio" id="q_2_1">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">2.1. Bạn sẵn sàng trả thêm bao nhiêu chi phí cho dịch vụ nâng cấp / tân trang riêng lẻ (bọc plastic, dán gáy, tẩy vết bẩn)? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="Q2_1" value="A. 0 đồng"><span class="option-content">A. 0 đồng (Tôi tự làm ở nhà)</span></label>
-                    <label class="custom-option"><input type="radio" name="Q2_1" value="B. 5.000 đồng"><span class="option-content">B. 5.000 đồng / sản phẩm</span></label>
-                    <label class="custom-option"><input type="radio" name="Q2_1" value="C. 10.000 đồng"><span class="option-content">C. 10.000 đồng / sản phẩm</span></label>
-                    <label class="custom-option"><input type="radio" name="Q2_1" value="D. Trên 10.000 đồng"><span class="option-content">D. Trên 10.000 đồng / sản phẩm</span></label>
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="radio" id="q_2_2">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">2.2. Nếu chúng tôi thu mua giáo trình/sách tham khảo với mức 30% giá bìa và Bạn nhận tiền ngay thì Bạn thấy mức giá này thế nào? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="Q2_2" value="A. Hình thức rất hợp lý vì tôi muốn nhận tiền ngay"><span class="option-content">A. Hình thức rất hợp lý vì tôi muốn nhận tiền ngay</span></label>
-                    <label class="custom-option"><input type="radio" name="Q2_2" value="B. Hình thức hợp lý và mức giá chấp nhận được"><span class="option-content">B. Hình thức hợp lý và mức giá chấp nhận được</span></label>
-                    <label class="custom-option"><input type="radio" name="Q2_2" value="C. Mức giá hơi thấp, tôi chỉ bán nếu được từ 40% giá bìa trở lên"><span class="option-content">C. Mức giá hơi thấp, tôi chỉ bán nếu được từ 40% giá bìa trở lên</span></label>
-                    <label class="custom-option"><input type="radio" name="Q2_2" value="D. Tôi không muốn bán đứt, chỉ muốn ký gửi hưởng hoa hồng"><span class="option-content">D. Tôi không muốn bán đứt, chỉ muốn ký gửi hưởng hoa hồng</span></label>
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="checkbox" data-max="2" id="q_2_3">
-                    <label class="block font-semibold text-gray-900 mb-1 text-lg">2.3. Khi chọn mua giáo trình cũ, điều gì khiến Bạn sẵn sàng trả mức giá cao hơn? <span class="text-red-500">*</span></label>
-                    <p class="text-sm text-indigo-600 font-medium mb-3">(Chọn tối đa 2 đáp án)</p>
-                    <label class="custom-option"><input type="checkbox" name="Q2_3" value="Mức giá rẻ vượt trội"><span class="option-content">Mức giá rẻ vượt trội so với đồ mới</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q2_3" value="Hình thức sạch sẽ"><span class="option-content">Hình thức sạch sẽ, đã được vệ sinh, bọc plastic mới</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q2_3" value="Tặng kèm bộ đề/tài liệu"><span class="option-content">Được tặng kèm bộ đề ôn thi / tài liệu tóm tắt môn học</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q2_3" value="Nhận hàng tự động 24/7"><span class="option-content">Địa điểm nhận hàng tự động 24/7 qua Tủ Locker, không tốn thời gian hẹn</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q2_3" value="Có đơn vị trung gian đảm bảo"><span class="option-content">Có đơn vị trung gian đảm bảo an toàn thanh toán và đổi trả</span></label>
-                    <div class="error-message">Vui lòng chọn 1 đến 2 đáp án.</div>
-                </div>
-            </section>
-
-            <section id="step-5" class="survey-card" data-title="Phần III (3/5): Trải nghiệm hiện có">
-                <h3 class="text-lg font-semibold text-indigo-700 mb-6">Nhóm 3: Hành vi sử dụng kênh cạnh tranh và trải nghiệm hiện có</h3>
-
-                <div class="question-group mb-8" data-required="true" data-type="checkbox" id="q_3_1">
-                    <label class="block font-semibold text-gray-900 mb-1 text-lg">3.1. Bạn từng sử dụng hoặc biết đến các thương hiệu/kênh mua bán đồ cũ nào dưới đây? <span class="text-red-500">*</span></label>
-                    <p class="text-sm text-gray-500 mb-3">(Chọn nhiều đáp án)</p>
-                    <label class="custom-option"><input type="checkbox" name="Q3_1" value="Hội nhóm Facebook / Zalo"><span class="option-content">Các hội nhóm Facebook sinh viên trường / Group Zalo ktx</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q3_1" value="Shop ký gửi thời trang"><span class="option-content">Các shop ký gửi thời trang/đồ dùng (Give Away, Glammie, Passii...)</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q3_1" value="Tiệm sách cũ truyền thống"><span class="option-content">Các tiệm sách cũ truyền thống (Bá Tân Sách, Vựa Sách Cũ...)</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q3_1" value="Sàn TMĐT/Ứng dụng"><span class="option-content">Các sàn TMĐT/Ứng dụng (Chợ Tốt, Shopee Secondhand, TikTok Shop)</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q3_1" value="Chưa từng sử dụng"><span class="option-content">Chưa từng sử dụng bất kỳ kênh nào kể trên</span></label>
-                    <div class="error-message">Vui lòng chọn ít nhất một đáp án.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="checkbox" data-max="2" id="q_3_2">
-                    <label class="block font-semibold text-gray-900 mb-1 text-lg">3.2. Bạn thường gặp phải bất tiện nào khi tự mua bán đồ cũ trực tiếp giữa sinh viên với nhau? <span class="text-red-500">*</span></label>
-                    <p class="text-sm text-indigo-600 font-medium mb-3">(Chọn tối đa 2 đáp án)</p>
-                    <label class="custom-option"><input type="checkbox" name="Q3_2" value="Phụ thuộc giờ hẹn, bị bùng"><span class="option-content">Phải phụ thuộc vào giờ hẹn gặp của 2 bên, rủi ro bị "leo cây"</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q3_2" value="Ngại công khai thông tin"><span class="option-content">Ngại công khai sđt và tài khoản mxh cá nhân cho người lạ</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q3_2" value="Sợ lừa đảo, nhận hàng không đúng"><span class="option-content">Sợ bị lừa đảo tiền cọc hoặc nhận hàng không đúng như ảnh chụp</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q3_2" value="Khoảng cách xa, tốn thời gian đi lại"><span class="option-content">Khoảng cách địa lý xa, tốn chi phí/thời gian đi lại</span></label>
-                    <div class="error-message">Vui lòng chọn 1 đến 2 đáp án.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="radio" id="q_3_3">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">3.3. Yếu tố nào giúp Bạn tin tưởng gửi tài sản/đồ dùng cá nhân cho một Trạm Ký Gửi mới thành lập? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="Q3_3" value="A. Quản lý qua App/QR"><span class="option-content">A. Đơn hàng ký gửi được quản lý tự động qua App/mã qr có tra cứu riêng</span></label>
-                    <label class="custom-option"><input type="radio" name="Q3_3" value="B. Tiền tạm giữ ký quỹ"><span class="option-content">B. Tiền thanh toán tạm giữ ký quỹ, nhận đúng đồ mới giải ngân cho người bán</span></label>
-                    <label class="custom-option"><input type="radio" name="Q3_3" value="C. Mặt bằng cửa hàng rõ ràng"><span class="option-content">C. Trạm có mặt bằng cửa hàng rõ ràng, cố định nằm ngay sát KTX/Cổng trường</span></label>
-                    <label class="custom-option"><input type="radio" name="Q3_3" value="D. Quy trình đền bù rõ ràng"><span class="option-content">D. Quy trình lập phiếu nhận hàng rõ ràng, cam kết đền bù nếu mất mát</span></label>
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="radio" id="q_3_4">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">3.4. Nếu đồ dùng/sách Bạn gửi ký gửi sau 30 ngày vẫn chưa bán được, Bạn mong muốn Trạm xử lý theo phương án nào? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="Q3_4" value="A. Thông báo đến nhận lại miễn phí"><span class="option-content">A. Thông báo để Bạn đến nhận lại đồ hoàn toàn miễn phí</span></label>
-                    <label class="custom-option"><input type="radio" name="Q3_4" value="B. Tự động giảm giá 30-50%"><span class="option-content">B. Tự động giảm giá 30% - 50% để tiếp tục treo bán trong 15 ngày tới</span></label>
-                    <label class="custom-option"><input type="radio" name="Q3_4" value="C. Chuyển giao quỹ từ thiện"><span class="option-content">C. Đồng ý ủy quyền cho Trạm chuyển giao vào quỹ quyên góp từ thiện</span></label>
-                    <label class="custom-option"><input type="radio" name="Q3_4" value="D. Hỗ trợ giao tận phòng có phí"><span class="option-content">D. Trạm hỗ trợ tháo dỡ và giao lại tận phòng trọ với khoản phí ship nhỏ</span></label>
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
-                </div>
-            </section>
-
-            <section id="step-6" class="survey-card" data-title="Phần III (4/5): Truyền thông & Khuyến thị">
-                <h3 class="text-lg font-semibold text-indigo-700 mb-6">Nhóm 4: Chiến lược truyền thông và khuyến thị</h3>
-
-
-
-
-
-                <div class="question-group mb-8" data-required="true" data-type="checkbox" data-max="3" id="q_4_1">
-                    <label class="block font-semibold text-gray-900 mb-1 text-lg">4.1. Hình thức truyền thông nào trên mạng xã hội có thể thu hút Bạn và khiến Bạn muốn dùng thử dịch vụ của chúng tôi nhất? <span class="text-red-500">*</span></label>
-                    <p class="text-sm text-indigo-600 font-medium mb-3">(Chọn tối đa 3 đáp án)</p>
-                    <label class="custom-option"><input type="checkbox" name="Q4_1" value="Video so sánh tiện lợi"><span class="option-content">Video ngắn so sánh: "Quét qr nhận đồ 30s tại Locker 24/7" vs "Bị bùng hẹn"</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_1" value="Meme hài hước"><span class="option-content">Bài viết/Meme hài hước bắt trend về cuộc sống ktx và tiền sách đầu kỳ</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_1" value="Review sách sạch sẽ"><span class="option-content">Video/Hình ảnh review thực tế sách cũ sau khi vệ sinh, bọc plastic mới</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_1" value="Infographic hướng dẫn"><span class="option-content">Infographic hướng dẫn quy trình 3 bước Mua - Thuê - Ký gửi tại tủ Locker</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_1" value="Chính sách giá minh bạch"><span class="option-content">Nội dung về mức giá Mua/Thuê siêu rẻ và chính sách chia sẻ lợi nhuận ký gửi rõ ràng</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_1" value="Minigame/Voucher"><span class="option-content">Minigame / Thử thách tương tác nhận voucher trải nghiệm tủ Locker</span></label>
-                    <div class="error-message">Vui lòng chọn 1 đến 3 đáp án.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="checkbox" data-max="2" id="q_4_2">
-                    <label class="block font-semibold text-gray-900 mb-1 text-lg">4.2. Khi ký gửi đồ tại Trạm, Bạn muốn nhận hình thức ưu đãi nào (dành cho người bán/cho thuê)? <span class="text-red-500">*</span></label>
-                    <p class="text-sm text-indigo-600 font-medium mb-3">(Chọn tối đa 2 đáp án)</p>
-                    <label class="custom-option"><input type="checkbox" name="Q4_2" value="Miễn phí tân trang"><span class="option-content">Miễn phí 100% dịch vụ tân trang, vệ sinh và bọc plastic cho sản phẩm ký gửi</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_2" value="Giảm phí hoa hồng lần đầu"><span class="option-content">Miễn/Giảm % phí hoa hồng cho đơn hàng ký gửi thành công đầu tiên</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_2" value="Tặng Voucher Freeship"><span class="option-content">Tặng Voucher miễn phí giao hàng tận phòng ktx cho lần mua sách tiếp theo</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_2" value="Miễn phí lưu tủ"><span class="option-content">Miễn phí cước lưu tủ Locker từ ngày thứ 4 trở đi đối với đơn hàng đầu tiên</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_2" value="Tích điểm đổi quà"><span class="option-content">Tích điểm đổi quà/dụng cụ học tập mới sau mỗi sản phẩm ký gửi thành công</span></label>
-                    <div class="error-message">Vui lòng chọn 1 đến 2 đáp án.</div>
-                </div>
-
-                <!-- Ranking Question -->
-                <div class="question-group mb-8 bg-gray-50 p-4 rounded-xl border border-gray-200" data-required="true" data-type="ranking" id="q_4_3">
-                    <label class="block font-semibold text-gray-900 mb-2 text-lg">4.3. Bạn có thể bị thu hút bởi chương trình khuyến mại nào (dành cho người mua/thuê)? Hãy xếp hạng thứ tự từ 1 (Thích nhất) đến 4 (Ít thích nhất) <span class="text-red-500">*</span></label>
-                    <p class="text-sm text-indigo-600 mb-4">Mỗi hạng chỉ được chọn 1 lần.</p>
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3">
-                            <select name="Q4_3_Opt1" class="rank-select p-2 border border-gray-300 rounded text-center w-16" onchange="validateRanking(this)">
-                                <option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
-                            </select>
-                            <span class="text-sm md:text-base">Mã Freeship 0đ cho dịch vụ Giao hàng tận phòng ktx</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <select name="Q4_3_Opt2" class="rank-select p-2 border border-gray-300 rounded text-center w-16" onchange="validateRanking(this)">
-                                <option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
-                            </select>
-                            <span class="text-sm md:text-base">Giảm giá trực tiếp theo Combo (vd: Mua kèm sổ tay)</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <select name="Q4_3_Opt3" class="rank-select p-2 border border-gray-300 rounded text-center w-16" onchange="validateRanking(this)">
-                                <option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
-                            </select>
-                            <span class="text-sm md:text-base">Ưu đãi giảm giá cho Tân sinh viên/SV hoàn cảnh khó khăn</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <select name="Q4_3_Opt4" class="rank-select p-2 border border-gray-300 rounded text-center w-16" onchange="validateRanking(this)">
-                                <option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
-                            </select>
-                            <span class="text-sm md:text-base">Voucher giảm 50% "Tân trang/Bọc plastic" cho sách bạn có sẵn</span>
-                        </div>
-                    </div>
-                    <div class="error-message mt-3">Vui lòng xếp hạng đầy đủ từ 1 đến 4 và không trùng lặp.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="checkbox" data-max="3" id="q_4_4">
-                    <label class="block font-semibold text-gray-900 mb-1 text-lg">4.4. Những hoạt động truyền thông trực tiếp nào tại khu vực Làng Đại học khiến Bạn bị thu hút và muốn trải nghiệm Trạm Locker nhất? <span class="text-red-500">*</span></label>
-                    <p class="text-sm text-indigo-600 font-medium mb-3">(Chọn tối đa 3 đáp án)</p>
-                    <label class="custom-option"><input type="checkbox" name="Q4_4" value="Trải nghiệm quét qr nhận quà"><span class="option-content">Trải nghiệm quét qr mở tủ Locker 24/7 nhận quà/voucher ngẫu nhiên tại Cổng ktx a/b</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_4" value="Gian hàng sảnh trường"><span class="option-content">Gian hàng giới thiệu và hướng dẫn thao tác trên App/Website tại sảnh các trường đại học</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_4" value="Poster/Standee"><span class="option-content">Poster/Standee đặt ngay tại cụm tủ Locker và các điểm nút đông người qua lại</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_4" value="Tờ rơi ktx"><span class="option-content">Tờ rơi tóm tắt bảng giá Thuê - Mua và vị trí các trạm Locker phát tận tay tại ktx</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_4" value="Kết hợp CLB/Đội/Nhóm"><span class="option-content">Chương trình truyền thông kết hợp cùng các CLB/Đội/Nhóm sinh viên</span></label>
-                    <div class="error-message">Vui lòng chọn 1 đến 3 đáp án.</div>
-                </div>
-
-                <div class="question-group mb-8" data-required="true" data-type="checkbox" data-max="3" id="q_4_5">
-                    <label class="block font-semibold text-gray-900 mb-1 text-lg">4.5. Bạn sẵn sàng thực hiện hành động tương tác nào để nhận được Voucher giảm giá / Freeship từ Trạm? <span class="text-red-500">*</span></label>
-                    <p class="text-sm text-indigo-600 font-medium mb-3">(Chọn tối đa 3 đáp án)</p>
-                    <label class="custom-option"><input type="checkbox" name="Q4_5" value="Like/Follow mxh"><span class="option-content">Like / Follow Fanpage, TikTok và Zalo Mini App của Dự án</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_5" value="Share bài viết"><span class="option-content">Chia sẻ (Share) bài viết / video hướng dẫn sử dụng Locker công khai</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_5" value="Tag bạn bè"><span class="option-content">Tag 2 - 3 người bạn cùng phòng / cùng lớp vào bài viết khuyến mại</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_5" value="Check-in trực tiếp"><span class="option-content">Check-in trực tiếp tại cụm tủ Locker 24/7 ở ktx Khu A hoặc Khu B</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q4_5" value="Không muốn tương tác" onchange="handleExclusiveCheckbox(this, 'Q4_5')"><span class="option-content">Không muốn thực hiện hành động tương tác nào</span></label>
-                    <div class="error-message">Vui lòng chọn 1 đến 3 đáp án.</div>
-                </div>
-            </section>
-
-            <section id="step-7" class="survey-card" data-title="Phần III (5/5): Mạng lưới phân phối">
-                <h3 class="text-lg font-semibold text-indigo-700 mb-6">Nhóm 5: Mạng lưới phân phối và trải nghiệm tủ Locker 24/7</h3>
-
-                <div class="question-group mb-8" data-required="true" data-type="checkbox" data-max="2" id="q_5_1">
-                    <label class="block font-semibold text-gray-900 mb-1 text-lg">5.1. Đâu là khu vực Bạn mong muốn dự án đặt Trạm Tủ Locker 24/7 nhất tại Làng Đại học? <span class="text-red-500">*</span></label>
-                    <p class="text-sm text-indigo-600 font-medium mb-3">(Chọn tối đa 2 đáp án)</p>
-                    <label class="custom-option"><input type="checkbox" name="Q5_1" value="Sảnh trệt ktx a/b"><span class="option-content">Sảnh tầng trệt các tòa nhà ktx Khu A / ktx Khu B</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q5_1" value="Căn tin ktx"><span class="option-content">Căn tin / Nhà ăn trung tâm ktx</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q5_1" value="Sảnh/Cổng trường đh"><span class="option-content">Sảnh/Cổng chính các trường Đại học (uel, Bách Khoa, khtn, ussh...)</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q5_1" value="Trạm xe buýt"><span class="option-content">Trạm dừng xe buýt trung tâm Làng Đại học</span></label>
-                    <label class="custom-option"><input type="checkbox" name="Q5_1" value="Khu nhà trọ Dĩ An/Linh Trung"><span class="option-content">Khu vực nhà trọ sinh viên tập trung (Dĩ An / Linh Trung)</span></label>
-                    <div class="error-message">Vui lòng chọn 1 đến 2 đáp án.</div>
-                </div>
-
-
-
-
-
-                <div class="question-group mb-8" data-required="true" data-type="radio" id="q_5_2">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">5.2. Giả sử Trạm Locker vận hành tự động 24/7 (không có nhân sự hỗ trợ, Bạn tự quét mã QR) thì mức độ sẵn sàng trải nghiệm của Bạn ra sao? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="Q5_2" value="A. Sẵn sàng nếu có hướng dẫn chi tiết trên tủ"><span class="option-content">A. Sẵn sàng nếu có hướng dẫn chi tiết trên tủ</span></label>
-                    <label class="custom-option"><input type="radio" name="Q5_2" value="B. Không sẵn sàng, e ngại gặp khó khăn nếu không có người hỗ trợ"><span class="option-content">B. Không sẵn sàng, e ngại gặp khó khăn nếu không có người hỗ trợ</span></label>
-
-
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
-                </div>
-            </section>
-
-            <section id="step-8" class="survey-card" data-title="Phần IV: Đánh giá Likert">
-                <h2 class="text-xl font-bold text-gray-900 mb-4 uppercase">PHẦN IV: THANG ĐO MỨC ĐỘ ĐỒNG TÌNH</h2>
-                <div class="bg-blue-50 text-blue-800 p-4 rounded-lg text-sm mb-6 border border-blue-100">
-                    Xin vui lòng chọn mức độ ĐỒNG Ý của bạn đối với các phát biểu dưới đây về dịch vụ Trạm Locker 24/7.<br>
-                    <strong>1</strong>: Hoàn toàn không đồng ý | <strong>2</strong>: Không đồng ý | <strong>3</strong>: Trung lập | <strong>4</strong>: Đồng ý | <strong>5</strong>: Hoàn toàn đồng ý
-                </div>
-
-                <div class="space-y-6">
-                    <!-- Likert Item 1 -->
-                    <div class="question-group bg-white p-4 rounded-xl border border-gray-200" data-required="true" data-type="radio">
-                        <label class="block font-medium text-gray-900 mb-2">TL1. Khả năng nhận/gửi đồ 24/7 (bất kể ngày/đêm) giúp tôi chủ động thời gian, không lo bị bùng hẹn.</label>
-                        <div class="likert-grid">
-                            <label class="likert-option"><input type="radio" name="TL1" value="1"><span class="font-bold text-lg">1</span></label>
-                            <label class="likert-option"><input type="radio" name="TL1" value="2"><span class="font-bold text-lg">2</span></label>
-                            <label class="likert-option"><input type="radio" name="TL1" value="3"><span class="font-bold text-lg">3</span></label>
-                            <label class="likert-option"><input type="radio" name="TL1" value="4"><span class="font-bold text-lg">4</span></label>
-                            <label class="likert-option"><input type="radio" name="TL1" value="5"><span class="font-bold text-lg">5</span></label>
-                        </div>
-                        <div class="error-message text-center">Vui lòng đánh giá mức độ.</div>
+                    <div class="question-group mb-8" data-required="true" data-type="radio" id="q_D1">
+                        <label class="block font-semibold text-gray-900 mb-3 text-lg">D1. Bạn hiện đang là sinh viên năm mấy? <span class="text-red-500">*</span></label>
+                        <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 1"><span class="option-content">Sinh viên năm 1</span></label>
+                        <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 2"><span class="option-content">Sinh viên năm 2</span></label>
+                        <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 3"><span class="option-content">Sinh viên năm 3</span></label>
+                        <label class="custom-option"><input type="radio" name="D1" value="Sinh viên năm 4 / Chuẩn bị tốt nghiệp"><span class="option-content">Sinh viên năm 4 / Chuẩn bị tốt nghiệp</span></label>
+                        <label class="custom-option"><input type="radio" name="D1" value="Khác"><span class="option-content">Khác (Học viên sau đại học / Cựu sinh viên)</span></label>
+                        <div class="error-message">Vui lòng chọn một đáp án.</div>
                     </div>
 
-                    <!-- Likert Item 2 -->
-                    <div class="question-group bg-white p-4 rounded-xl border border-gray-200" data-required="true" data-type="radio">
-                        <label class="block font-medium text-gray-900 mb-2">TL2. Việc tự thao tác mở tủ bằng mã qr hoặc otp gửi về điện thoại là đơn giản và tiện lợi đối với tôi.</label>
-                        <div class="likert-grid">
-                            <label class="likert-option"><input type="radio" name="TL2" value="1"><span class="font-bold text-lg">1</span></label>
-                            <label class="likert-option"><input type="radio" name="TL2" value="2"><span class="font-bold text-lg">2</span></label>
-                            <label class="likert-option"><input type="radio" name="TL2" value="3"><span class="font-bold text-lg">3</span></label>
-                            <label class="likert-option"><input type="radio" name="TL2" value="4"><span class="font-bold text-lg">4</span></label>
-                            <label class="likert-option"><input type="radio" name="TL2" value="5"><span class="font-bold text-lg">5</span></label>
-                        </div>
-                        <div class="error-message text-center">Vui lòng đánh giá mức độ.</div>
+                    <div class="question-group mb-8" data-required="true" data-type="radio" id="q_D2">
+                        <label class="block font-semibold text-gray-900 mb-3 text-lg">D2. Ngân sách trung bình Bạn chi trả cho giáo trình, sách tham khảo và đồ dùng học tập trong một học kỳ? <span class="text-red-500">*</span></label>
+                        <label class="custom-option"><input type="radio" name="D2" value="Dưới 200.000 vnđ"><span class="option-content">Dưới 200.000 vnđ</span></label>
+                        <label class="custom-option"><input type="radio" name="D2" value="Từ 200.000 – 400.000 vnđ"><span class="option-content">Từ 200.000 – 400.000 vnđ</span></label>
+                        <label class="custom-option"><input type="radio" name="D2" value="Từ 401.000 – 600.000 vnđ"><span class="option-content">Từ 401.000 – 600.000 vnđ</span></label>
+                        <label class="custom-option"><input type="radio" name="D2" value="Trên 600.000 vnđ"><span class="option-content">Trên 600.000 vnđ</span></label>
+                        <div class="error-message">Vui lòng chọn một đáp án.</div>
                     </div>
 
-                    <!-- Likert Item 3 -->
-                    <div class="question-group bg-white p-4 rounded-xl border border-gray-200" data-required="true" data-type="radio">
-                        <label class="block font-medium text-gray-900 mb-2">TT1. Tôi cảm thấy an toàn và tin tưởng khi tiền thanh toán được hệ thống tạm giữ (Escrow), nhận đúng đồ mới giải ngân.</label>
-                        <div class="likert-grid">
-                            <label class="likert-option"><input type="radio" name="TT1" value="1"><span class="font-bold text-lg">1</span></label>
-                            <label class="likert-option"><input type="radio" name="TT1" value="2"><span class="font-bold text-lg">2</span></label>
-                            <label class="likert-option"><input type="radio" name="TT1" value="3"><span class="font-bold text-lg">3</span></label>
-                            <label class="likert-option"><input type="radio" name="TT1" value="4"><span class="font-bold text-lg">4</span></label>
-                            <label class="likert-option"><input type="radio" name="TT1" value="5"><span class="font-bold text-lg">5</span></label>
-                        </div>
-                        <div class="error-message text-center">Vui lòng đánh giá mức độ.</div>
-                    </div>
-
-                    <!-- Likert Item 4 -->
-                    <div class="question-group bg-white p-4 rounded-xl border border-gray-200" data-required="true" data-type="radio">
-                        <label class="block font-medium text-gray-900 mb-2">TT2. Tôi ưu tiên nhận/gửi đồ qua Tủ Locker 24/7 để ẩn thông tin cá nhân (sđt, fb), tránh bị lừa đảo hay làm phiền.</label>
-                        <div class="likert-grid">
-                            <label class="likert-option"><input type="radio" name="TT2" value="1"><span class="font-bold text-lg">1</span></label>
-                            <label class="likert-option"><input type="radio" name="TT2" value="2"><span class="font-bold text-lg">2</span></label>
-                            <label class="likert-option"><input type="radio" name="TT2" value="3"><span class="font-bold text-lg">3</span></label>
-                            <label class="likert-option"><input type="radio" name="TT2" value="4"><span class="font-bold text-lg">4</span></label>
-                            <label class="likert-option"><input type="radio" name="TT2" value="5"><span class="font-bold text-lg">5</span></label>
-                        </div>
-                        <div class="error-message text-center">Vui lòng đánh giá mức độ.</div>
-                    </div>
-
-                    <!-- Likert Item 5 -->
-                    <div class="question-group bg-white p-4 rounded-xl border border-gray-200" data-required="true" data-type="radio">
-                        <label class="block font-medium text-gray-900 mb-2">YD1. Tôi sẵn lòng sử dụng dịch vụ Trạm Ký Gửi và Nâng Cấp Giáo Trình khi dự án chính thức vận hành.</label>
-                        <div class="likert-grid">
-                            <label class="likert-option"><input type="radio" name="YD1" value="1"><span class="font-bold text-lg">1</span></label>
-                            <label class="likert-option"><input type="radio" name="YD1" value="2"><span class="font-bold text-lg">2</span></label>
-                            <label class="likert-option"><input type="radio" name="YD1" value="3"><span class="font-bold text-lg">3</span></label>
-                            <label class="likert-option"><input type="radio" name="YD1" value="4"><span class="font-bold text-lg">4</span></label>
-                            <label class="likert-option"><input type="radio" name="YD1" value="5"><span class="font-bold text-lg">5</span></label>
-                        </div>
-                        <div class="error-message text-center">Vui lòng đánh giá mức độ.</div>
-                    </div>
-
-                    <!-- Likert Item 6 -->
-                    <div class="question-group bg-white p-4 rounded-xl border border-gray-200" data-required="true" data-type="radio">
-                        <label class="block font-medium text-gray-900 mb-2">YD2. Tôi sẵn lòng giới thiệu Trạm Locker 24/7 cho bạn bè và sinh viên cùng phòng/cùng lớp trải nghiệm.</label>
-                        <div class="likert-grid">
-                            <label class="likert-option"><input type="radio" name="YD2" value="1"><span class="font-bold text-lg">1</span></label>
-                            <label class="likert-option"><input type="radio" name="YD2" value="2"><span class="font-bold text-lg">2</span></label>
-                            <label class="likert-option"><input type="radio" name="YD2" value="3"><span class="font-bold text-lg">3</span></label>
-                            <label class="likert-option"><input type="radio" name="YD2" value="4"><span class="font-bold text-lg">4</span></label>
-                            <label class="likert-option"><input type="radio" name="YD2" value="5"><span class="font-bold text-lg">5</span></label>
-                        </div>
-                        <div class="error-message text-center">Vui lòng đánh giá mức độ.</div>
+                    <div class="flex gap-3">
+                        <button type="button" onclick="prevStep()" class="flex-1 border border-gray-300 text-gray-700 font-semibold py-3 rounded-lg hover:bg-gray-50 transition-colors">QUAY LẠI</button>
+                        <button type="button" onclick="nextStep()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition-colors">TIẾP TỤC</button>
                     </div>
                 </div>
-
-                <div class="mt-8">
-                    <label class="block font-semibold text-gray-900 mb-2">Ý kiến đóng góp khác của Bạn nhằm giúp dự án phục vụ sinh viên tốt hơn (Không bắt buộc):</label>
-                    <textarea name="Feedback" rows="4" class="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Nhập ý kiến của bạn..."></textarea>
-                </div>
-            </section>
-
-            <section id="step-9" class="survey-card" data-title="">
-                <div class="question-group" data-required="true" data-type="radio" id="q_referral">
-                    <label class="block font-semibold text-gray-900 mb-3 text-lg">Cuối cùng, Bạn nhận khảo sát này từ ai? <span class="text-red-500">*</span></label>
-                    <label class="custom-option"><input type="radio" name="Referral" value="Dương Quốc Anh"><span class="option-content">A. Dương Quốc Anh</span></label>
-                    <label class="custom-option"><input type="radio" name="Referral" value="Nguyễn Hoàng Ân"><span class="option-content">B. Nguyễn Hoàng Ân</span></label>
-                    <label class="custom-option"><input type="radio" name="Referral" value="Dương Yến Ngọc"><span class="option-content">C. Dương Yến Ngọc</span></label>
-                    <label class="custom-option"><input type="radio" name="Referral" value="Hoàng Thanh Long"><span class="option-content">D. Hoàng Thanh Long</span></label>
-                    <label class="custom-option"><input type="radio" name="Referral" value="Nguyễn Hà Phương"><span class="option-content">E. Nguyễn Hà Phương</span></label>
-                    <label class="custom-option"><input type="radio" name="Referral" value="Lê Thị Như Phương"><span class="option-content">F. Lê Thị Như Phương</span></label>
-                    <div class="error-message">Vui lòng chọn một đáp án.</div>
-                </div>
-            </section>
-
-            <section id="step-10" class="survey-card text-center" data-title="Hoàn tất khảo sát">
-                <div class="py-8">
-                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Bạn đã hoàn thành khảo sát!</h2>
-                    <p class="text-gray-600 mb-8">Bấm "GỬI KHẢO SÁT" để lưu kết quả.</p>
-
-                    <div id="submit-error" class="hidden mb-6 p-4 bg-red-50 text-red-700 rounded-lg text-sm">
-                        Không thể gửi dữ liệu vào lúc này. Vui lòng kiểm tra kết nối mạng và thử lại.
-                    </div>
-                    <button type="button" onclick="submitSurvey()" id="btn-submit" class="w-full md:w-auto px-10 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition shadow-lg text-lg flex items-center justify-center mx-auto">
-                        <span id="submit-text">GỬI KHẢO SÁT</span>
-                        <svg id="submit-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                    </button>
-                </div>
-            </section>
-
-            <section id="step-disqualified" class="survey-card text-center py-10">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Cảm ơn Bạn!</h2>
-                <p class="text-gray-600 mb-6">Do nhu cầu và định hướng tiêu dùng hiện tại, Bạn không nằm trong nhóm đối tượng mục tiêu của nghiên cứu lần này.</p>
-                <p class="text-gray-600 font-medium">Nhóm dự án xin chân thành cảm ơn Bạn đã dành thời gian quan tâm đến khảo sát!</p>
-            </section>
-
-            <section id="step-success" class="survey-card text-center py-10">
-                <div class="w-24 h-24 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <h2 class="text-3xl font-bold text-gray-900 mb-4 uppercase">Cảm ơn bạn!</h2>
-                <p class="text-gray-600 mb-4 text-lg">Dữ liệu khảo sát của bạn đã được ghi nhận thành công. Chúc bạn có một ngày học tập và làm việc hiệu quả!</p>
-                <div class="inline-block bg-gray-100 text-gray-500 px-4 py-2 rounded-lg text-sm font-mono mb-8">
-                    Mã Response ID: <span id="display-response-id" class="font-bold text-gray-800"></span>
-                </div>
-                <p class="text-gray-600 italic">Thực hiện: Nhóm 8 - Lớp Lập và thẩm định dự án đầu tư (UEL)</p>
             </section>
 
         </form>
     </main>
 
-    <footer id="footer-nav" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 hidden shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40">
-        <div class="max-w-3xl mx-auto flex justify-between gap-4">
-            <button type="button" onclick="prevStep()" id="btn-prev" class="flex-1 py-3 px-4 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition">
-                ← QUAY LẠI
-            </button>
-            <button type="button" onclick="nextStep()" id="btn-next" class="flex-1 py-3 px-4 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition shadow-md">
-                TIẾP TỤC →
-            </button>
-        </div>
-    </footer>
-
     <script>
-        const DRAFT_STORAGE_KEY = "khaosat-draft-v2";
-        let surveyResponseId = null;
-        let activeEmail = '';
-        let activeAccountKey = '';
-        let pendingResumeAccount = '';
-        let pendingResumeStep = 0;
-        let restoringDraft = false;
-
         let currentStep = 0;
-        const totalSteps = 10; // steps 1 to 10 are the main flow
+        let surveyData = { response_id: '', answers: {} };
+        let googleAccount = null;
 
-        // Khởi tạo các sự kiện giới hạn Checkbox
-        document.addEventListener('DOMContentLoaded', () => {
-            setupCheckboxLimits();
-            document.getElementById('surveyForm').addEventListener('change', saveDraft);
-            document.getElementById('surveyForm').addEventListener('input', saveDraft);
-            initializeGoogleLogin();
-        });
-
-        function draftKey() {
-            return activeAccountKey ? `${DRAFT_STORAGE_KEY}:${activeAccountKey}` : '';
+        // Generate unique response ID
+        function generateResponseId() {
+            const timestamp = Date.now().toString(36).toUpperCase();
+            const random = Math.random().toString(36).substring(2, 10).toUpperCase();
+            return `SRV-${timestamp}${random}`.substring(0, 24);
         }
 
-        function saveDraft() {
-            if (!activeAccountKey || restoringDraft) return;
-            const values = {};
-            new FormData(document.getElementById('surveyForm')).forEach((value, key) => {
-                if (values[key]) values[key] = Array.isArray(values[key]) ? [...values[key], value] : [values[key], value];
-                else values[key] = value;
-            });
-            document.querySelectorAll('#surveyForm input[type="text"], #surveyForm textarea').forEach(input => {
-                if (input.value && !input.name) values[input.id] = input.value;
-            });
-            if (surveyResponseId) values._response_id = surveyResponseId;
-            values._step = currentStep;
-            localStorage.setItem(draftKey(), JSON.stringify(values));
-        }
-
-        function restoreDraft() {
-            let saved = localStorage.getItem(draftKey());
-            if (!saved) {
-                const legacy = localStorage.getItem(DRAFT_STORAGE_KEY);
-                if (legacy) {
-                    try {
-                        const oldValues = JSON.parse(legacy);
-                        if (String(oldValues.email || '').trim().toLowerCase() === activeEmail) {
-                            saved = legacy;
-                            localStorage.setItem(draftKey(), legacy);
-                            localStorage.removeItem(DRAFT_STORAGE_KEY);
-                        }
-                    } catch (_error) { /* Ignore an invalid old draft. */ }
-                }
-            }
-            if (!saved) return;
-            try {
-                const values = JSON.parse(saved);
-                restoringDraft = true;
-                Object.entries(values).forEach(([key, value]) => {
-                    if (key === '_response_id') {
-                        surveyResponseId = value;
+        // Initialize Google Sign-In
+        function initGoogleSignIn() {
+            fetch('/api/auth/config')
+                .then(r => r.json())
+                .then(config => {
+                    if (!config.ok || !config.client_id) {
+                        showAuthError('Không thể cấu hình đăng nhập Google. Vui lòng thử lại sau.');
                         return;
                     }
-                    if (key === '_step') {
-                        const step = Number(value);
-                        if (Number.isInteger(step) && step >= 1 && step <= totalSteps) currentStep = step;
-                        return;
-                    }
-                    const inputs = document.querySelectorAll(`[name="${key}"]`);
-                    (Array.isArray(value) ? value : [value]).forEach(item => {
-                        const input = Array.from(inputs).find(candidate => candidate.value === item);
-                        if (input && (input.type === 'checkbox' || input.type === 'radio') && !input.checked) input.click();
-                        else if (inputs.length === 1 && inputs[0].type !== 'checkbox' && inputs[0].type !== 'radio') inputs[0].value = item;
+                    
+                    google.accounts.id.initialize({
+                        client_id: config.client_id,
+                        callback: handleGoogleSignIn,
+                        auto_select: false
                     });
-                    const input = document.getElementById(key);
-                    if (input && !input.name) input.value = value;
+
+                    google.accounts.id.renderButton(
+                        document.getElementById('google-signin-button'),
+                        {
+                            theme: 'outline',
+                            size: 'large',
+                            width: '300',
+                            text: 'signin_with'
+                        }
+                    );
+                })
+                .catch(err => {
+                    console.error('Config error:', err);
+                    showAuthError('Lỗi kết nối. Vui lòng thử lại sau.');
                 });
-            } catch (error) {
-                localStorage.removeItem(draftKey());
-            } finally {
-                restoringDraft = false;
-            }
-            if (currentStep > 0) showStep(currentStep);
         }
 
-        async function apiRequest(endpoint, data) {
-            const response = await fetch(endpoint, data === undefined ? {} : {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            const result = await response.json();
-            if (!response.ok || !result.ok) {
-                const error = new Error(result.error || 'Không thể kết nối. Vui lòng thử lại.');
-                error.status = response.status;
-                throw error;
+        // Handle Google Sign-In response
+        async function handleGoogleSignIn(response) {
+            if (!response.credential) {
+                showAuthError('Đăng nhập không thành công. Vui lòng thử lại.');
+                return;
             }
-            return result;
+
+            try {
+                const res = await fetch('/api/auth/google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credential: response.credential })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok || !data.ok) {
+                    showAuthError(data.error || 'Đăng nhập không thành công.');
+                    return;
+                }
+
+                googleAccount = data;
+                showGoogleAccount(data.email);
+                document.getElementById('btn-start').disabled = false;
+                clearAuthError();
+                surveyData.response_id = generateResponseId();
+            } catch (err) {
+                console.error('Auth error:', err);
+                showAuthError('Lỗi kết nối. Vui lòng thử lại sau.');
+            }
+        }
+
+        // Switch Google Account
+        function switchGoogleAccount() {
+            googleAccount = null;
+            document.getElementById('google-account').classList.add('hidden');
+            document.getElementById('btn-start').disabled = true;
+            google.accounts.id.renderButton(
+                document.getElementById('google-signin-button'),
+                { theme: 'outline', size: 'large', width: '300', text: 'signin_with' }
+            );
+        }
+
+        function showGoogleAccount(email) {
+            document.getElementById('google-email').textContent = email;
+            document.getElementById('google-account').classList.remove('hidden');
+            document.getElementById('google-signin-button').style.display = 'none';
         }
 
         function showAuthError(message) {
-            const errorBox = document.getElementById('auth-error');
-            errorBox.textContent = message;
-            errorBox.classList.toggle('hidden', !message);
+            const errorEl = document.getElementById('auth-error');
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
         }
 
-        function setAuthenticatedAccount(account) {
-            activeEmail = account.email;
-            activeAccountKey = account.account_key;
-            document.getElementById('google-email').textContent = activeEmail;
-            document.getElementById('google-account').classList.remove('hidden');
-            document.getElementById('google-signin-button').classList.add('hidden');
-            document.getElementById('btn-start').disabled = false;
-            showAuthError('');
-            if (pendingResumeAccount === activeAccountKey) {
-                currentStep = pendingResumeStep;
-                pendingResumeAccount = '';
-                pendingResumeStep = 0;
-                document.getElementById('submit-error').classList.add('hidden');
-                showStep(currentStep);
+        function clearAuthError() {
+            const errorEl = document.getElementById('auth-error');
+            errorEl.classList.add('hidden');
+        }
+
+        function nextStep() {
+            if (!validateStep(currentStep)) return;
+            currentStep++;
+            if (currentStep >= document.querySelectorAll('.survey-card').length) {
+                submitSurvey();
             } else {
-                restoreDraft();
-            }
-        }
-
-        async function handleGoogleCredential(response) {
-            try {
-                const account = await apiRequest('/api/auth/google', { credential: response.credential });
-                if (pendingResumeAccount && account.account_key !== pendingResumeAccount) {
-                    await apiRequest('/api/logout', {});
-                    showAuthError('Vui lòng chọn lại đúng tài khoản Google để tiếp tục khảo sát đang làm.');
-                    return;
-                }
-                setAuthenticatedAccount(account);
-            } catch (error) {
-                showAuthError(error.message);
-            }
-        }
-
-        async function initializeGoogleLogin() {
-            try {
-                const config = await apiRequest('/api/auth/config');
-                if (!window.google?.accounts?.id) throw new Error('Không tải được nút đăng nhập Google. Vui lòng tải lại trang.');
-                google.accounts.id.initialize({ client_id: config.client_id, callback: handleGoogleCredential, auto_select: false });
-                google.accounts.id.renderButton(document.getElementById('google-signin-button'), { theme: 'outline', size: 'large', text: 'signin_with', width: 280 });
-                try {
-                    const session = await apiRequest('/api/session');
-                    setAuthenticatedAccount(session);
-                } catch (error) {
-                    if (error.status !== 401) showAuthError(error.message);
-                }
-            } catch (error) {
-                showAuthError(error.message);
-            }
-        }
-
-        async function switchGoogleAccount() {
-            try {
-                saveDraft();
-                await apiRequest('/api/logout', {});
-            } catch (error) {
-                showAuthError(error.message);
-                return;
-            }
-            google.accounts.id.disableAutoSelect();
-            document.getElementById('surveyForm').reset();
-            document.querySelectorAll('#surveyForm input[type="checkbox"]').forEach(input => input.disabled = false);
-            document.querySelectorAll('#surveyForm input[type="text"]').forEach(input => input.classList.add('hidden'));
-            activeEmail = '';
-            activeAccountKey = '';
-            surveyResponseId = null;
-            pendingResumeAccount = '';
-            pendingResumeStep = 0;
-            document.getElementById('google-account').classList.add('hidden');
-            document.getElementById('google-signin-button').classList.remove('hidden');
-            document.getElementById('btn-start').disabled = true;
-            currentStep = 0;
-            showStep(0);
-        }
-
-        function setupCheckboxLimits() {
-            const checkboxGroups = document.querySelectorAll('.question-group[data-type="checkbox"][data-max]');
-            checkboxGroups.forEach(group => {
-                const max = parseInt(group.getAttribute('data-max'));
-                const checkboxes = group.querySelectorAll('input[type="checkbox"]:not([value="Không muốn tương tác"])');
-
-                checkboxes.forEach(cb => {
-                    cb.addEventListener('change', () => {
-                        const checkedCount = group.querySelectorAll('input[type="checkbox"]:checked:not([value="Không muốn tương tác"])').length;
-                        if (checkedCount >= max) {
-                            checkboxes.forEach(box => {
-                                if (!box.checked) box.disabled = true;
-                            });
-                        } else {
-                            checkboxes.forEach(box => box.disabled = false);
-                        }
-                    });
-                });
-            });
-        }
-
-        // Xử lý Checkbox loại trừ (VD: "Không muốn tương tác")
-        function handleExclusiveCheckbox(checkbox, name) {
-            const group = document.getElementsByName(name);
-            if (checkbox.checked) {
-                group.forEach(cb => {
-                    if (cb !== checkbox) {
-                        cb.checked = false;
-                        cb.disabled = true;
-                    }
-                });
-            } else {
-                group.forEach(cb => cb.disabled = false);
-            }
-        }
-
-        // Hiện/Ẩn input text khi chọn "Khác"
-        function toggleTextInput(inputId, isChecked) {
-            const input = document.getElementById(inputId);
-            if (isChecked) {
-                input.classList.remove('hidden');
-                input.focus();
-            } else {
-                input.classList.add('hidden');
-                input.value = '';
-            }
-        }
-
-        // Validate ranking Q4.5
-        function validateRanking(selectElement) {
-            const container = document.getElementById('q_4_3');
-            const selects = container.querySelectorAll('.rank-select');
-            const values = Array.from(selects).map(s => s.value).filter(v => v !== "");
-
-            // Xóa background lỗi cũ
-            selects.forEach(s => s.classList.remove('bg-red-50', 'border-red-500'));
-
-            // Check duplicate
-            const hasDuplicates = new Set(values).size !== values.length;
-            if (hasDuplicates) {
-                selects.forEach(s => {
-                    if (s.value !== "" && values.filter(v => v === s.value).length > 1) {
-                        s.classList.add('bg-red-50', 'border-red-500');
-                    }
-                });
-            }
-        }
-
-        // Chuyển bước
-        function showStep(step) {
-            document.querySelectorAll('.survey-card').forEach(card => card.classList.remove('active'));
-
-            // Nếu bị loại
-            if (step === 'disqualified') {
-                document.getElementById('step-disqualified').classList.add('active');
-                document.getElementById('header').classList.add('hidden');
-                document.getElementById('footer-nav').classList.add('hidden');
-                return;
-            }
-
-            // Nếu thành công
-            if (step === 'success') {
-                document.getElementById('step-success').classList.add('active');
-                document.getElementById('header').classList.add('hidden');
-                document.getElementById('footer-nav').classList.add('hidden');
-                return;
-            }
-
-            document.getElementById(`step-${step}`).classList.add('active');
-
-            // UI Header & Footer
-            if (step === 0) {
-                document.getElementById('header').classList.add('hidden');
-                document.getElementById('footer-nav').classList.add('hidden');
-            } else {
-                document.getElementById('header').classList.remove('hidden');
-                document.getElementById('footer-nav').classList.remove('hidden');
-
-                // Update Progress bar
-                const percent = Math.round((step / totalSteps) * 100);
-                document.getElementById('progress-bar').style.width = `${percent}%`;
-                document.getElementById('progress-percent').innerText = `${percent}%`;
-
-                const title = document.getElementById(`step-${step}`).getAttribute('data-title');
-                if (title !== null) document.getElementById('progress-text').innerText = title;
-
-                // Nút Footer
-                if (step === 1) {
-                    document.getElementById('btn-prev').classList.add('invisible');
-                } else {
-                    document.getElementById('btn-prev').classList.remove('invisible');
-                }
-
-                if (step === totalSteps) {
-                    document.getElementById('footer-nav').classList.add('hidden'); // Ẩn footer ở màn Review
-                } else {
-                    document.getElementById('btn-next').innerText = "TIẾP TỤC →";
-                }
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        async function nextStep() {
-            if (currentStep === 0) {
-                if (!activeAccountKey) return showAuthError('Vui lòng đăng nhập bằng Google trước khi bắt đầu.');
-            }
-            if (currentStep > 0 && !validateStep(currentStep)) {
-                return;
-            }
-
-            // Logic rẽ nhánh (Branching) sau bước 1
-            if (currentStep === 1) {
-                const s1 = document.querySelector('input[name="S1"]:checked').value;
-                if (s1 === "Không có nhu cầu") {
-                    localStorage.removeItem(draftKey());
-                    showStep('disqualified');
-                    return;
-                }
-            }
-
-            if (currentStep < totalSteps) {
-                currentStep++;
-                showStep(currentStep);
-                saveDraft();
+                updateView();
             }
         }
 
         function prevStep() {
-            if (currentStep > 1) {
+            if (currentStep > 0) {
                 currentStep--;
-                showStep(currentStep);
-                saveDraft();
+                updateView();
             }
         }
 
-        function validateStep(stepIndex) {
-            let isValid = true;
-            const stepEl = document.getElementById(`step-${stepIndex}`);
-            const groups = stepEl.querySelectorAll('.question-group[data-required="true"]');
+        function validateStep(step) {
+            const card = document.getElementById(`step-${step}`);
+            if (!card) return true;
+            
+            const groups = card.querySelectorAll('.question-group[data-required="true"]');
+            let valid = true;
 
             groups.forEach(group => {
-                group.classList.remove('has-error');
-                const type = group.getAttribute('data-type');
+                const type = group.dataset.type;
+                const name = group.querySelector(`input[type="${type}"]`)?.name;
+                let selected;
 
                 if (type === 'radio') {
-                    const checked = group.querySelector('input[type="radio"]:checked');
-                    if (!checked) {
+                    selected = card.querySelector(`input[type="radio"][name="${name}"]:checked`);
+                } else if (type === 'checkbox') {
+                    selected = card.querySelectorAll(`input[type="checkbox"][name="${name}"]:checked`);
+                    const max = parseInt(group.dataset.max) || 0;
+                    if (max && selected.length > max) {
                         group.classList.add('has-error');
-                        isValid = false;
-                    } else if (checked.value === "Khác") {
-                        // Tìm input text đi kèm trong cùng group
-                        const textInput = group.querySelector('input[type="text"]');
-                        if (textInput && textInput.value.trim() === '') {
-                            group.classList.add('has-error');
-                            isValid = false;
-                        }
+                        valid = false;
+                        return;
                     }
-                } 
-                else if (type === 'checkbox') {
-                    const checked = group.querySelectorAll('input[type="checkbox"]:checked');
-                    const max = group.getAttribute('data-max');
-
-                    if (checked.length === 0) {
-                        group.classList.add('has-error');
-                        isValid = false;
-                    } else if (max && checked.length > parseInt(max)) {
-                        group.classList.add('has-error');
-                        isValid = false;
-                    } else {
-                        // Check input "Khác"
-                        const otherChecked = Array.from(checked).find(cb => cb.value === "Khác");
-                        if (otherChecked) {
-                            const textInput = group.querySelector('input[type="text"]');
-                            if (textInput && textInput.value.trim() === '') {
-                                group.classList.add('has-error');
-                                isValid = false;
-                            }
-                        }
-                    }
+                    selected = selected.length > 0 ? [1] : [];
                 }
-                else if (type === 'ranking') {
-                    const selects = group.querySelectorAll('.rank-select');
-                    const values = Array.from(selects).map(s => s.value).filter(v => v !== "");
-                    const hasDuplicates = new Set(values).size !== values.length;
 
-                    if (values.length < 4 || hasDuplicates) {
-                        group.classList.add('has-error');
-                        isValid = false;
+                if (selected && selected.length > 0) {
+                    group.classList.remove('has-error');
+                    if (type === 'radio') {
+                        surveyData.answers[name] = selected.value;
+                    } else {
+                        surveyData.answers[name] = Array.from(card.querySelectorAll(`input[type="checkbox"][name="${name}"]:checked`))
+                            .map(el => el.value);
                     }
+                } else {
+                    group.classList.add('has-error');
+                    valid = false;
                 }
             });
 
-            if(!isValid) {
-                // Scroll to first error
-                const firstError = stepEl.querySelector('.has-error');
-                if (firstError) {
-                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }
-
-            return isValid;
+            return valid;
         }
 
-        // Xử lý gửi dữ liệu
+        function updateView() {
+            document.querySelectorAll('.survey-card').forEach((card, i) => {
+                card.classList.toggle('active', i === currentStep);
+            });
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        function updateProgress() {
+            const total = document.querySelectorAll('.survey-card').length;
+            const percent = Math.round((currentStep / total) * 100);
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('progress-percent').textContent = percent + '%';
+            document.getElementById('header').classList.toggle('hidden', currentStep === 0);
+        }
+
         async function submitSurvey() {
-            const btnSubmit = document.getElementById('btn-submit');
-            const submitText = document.getElementById('submit-text');
-            const submitSpinner = document.getElementById('submit-spinner');
-            const errorBox = document.getElementById('submit-error');
-
-            // Chuẩn bị Data
-            const form = document.getElementById('surveyForm');
-            const formData = new FormData(form);
-            let payload = {};
-            if (!surveyResponseId) surveyResponseId = "SRV-" + Date.now().toString(36).toUpperCase() + "-" + crypto.randomUUID().slice(0, 8).toUpperCase();
-            saveDraft();
-
-            // Mapping form data
-            for (let [key, value] of formData.entries()) {
-                // Xử lý "Khác"
-                if (value === "Khác") {
-                    const otherInput = document.getElementById(`${key}_other`);
-                    if(otherInput) value = "Khác: " + otherInput.value.trim();
-                }
-
-                if (payload[key]) {
-                    if (!Array.isArray(payload[key])) {
-                        payload[key] = [payload[key]];
-                    }
-                    payload[key].push(value);
-                } else {
-                    payload[key] = value;
-                }
+            if (!googleAccount) {
+                alert('Vui lòng đăng nhập Google.');
+                return;
             }
-
-            // UI Loading
-            btnSubmit.disabled = true;
-            submitText.innerText = "ĐANG XỬ LÝ...";
-            submitSpinner.classList.remove('hidden');
-            errorBox.classList.add('hidden');
 
             try {
-                const result = await apiRequest('/api/submit', { response_id: surveyResponseId, answers: payload });
-                localStorage.removeItem(draftKey());
-                document.getElementById('display-response-id').innerText = result.response_id;
-                showStep('success');
+                const res = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        response_id: surveyData.response_id,
+                        answers: surveyData.answers
+                    })
+                });
 
-            } catch (error) {
-                errorBox.textContent = error.message || 'Không thể gửi dữ liệu vào lúc này. Vui lòng thử lại.';
-                errorBox.classList.remove('hidden');
-                submitText.innerText = 'GỬI LẠI KHẢO SÁT';
-                if (error.status === 401) {
-                    pendingResumeAccount = activeAccountKey;
-                    pendingResumeStep = currentStep;
-                    activeEmail = '';
-                    activeAccountKey = '';
-                    document.getElementById('google-account').classList.add('hidden');
-                    document.getElementById('google-signin-button').classList.remove('hidden');
-                    document.getElementById('btn-start').disabled = true;
-                    currentStep = 0;
-                    showStep(0);
-                    showAuthError(error.message);
+                const data = await res.json();
+
+                if (!res.ok || !data.ok) {
+                    if (res.status === 409) {
+                        alert('Tài khoản Google này đã tham gia khảo sát rồi.');
+                    } else {
+                        alert(data.error || 'Không thể gửi khảo sát.');
+                    }
+                    return;
                 }
-            } finally {
-                btnSubmit.disabled = false;
-                submitSpinner.classList.add('hidden');
+
+                alert('Cảm ơn bạn đã tham gia khảo sát! Dữ liệu đã được lưu.');
+                await fetch('/api/logout', { method: 'POST' });
+                location.reload();
+            } catch (err) {
+                console.error('Submit error:', err);
+                alert('Lỗi kết nối. Vui lòng thử lại sau.');
             }
         }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initGoogleSignIn();
+            updateProgress();
+        });
     </script>
 </body>
 </html>
