@@ -27,10 +27,10 @@
                 const missing = [
                     !window.React && 'React',
                     !window.ReactDOM?.createRoot && 'ReactDOM',
-                    !window.Babel?.transformScriptTags && 'Babel',
+                    document.querySelector('script[type="text/babel"], script[type="text/jsx"]') && !window.Babel?.transformScriptTags && 'Babel',
                     !window.lucide?.icons && 'Lucide icons',
                     !window.qrcode && 'QR generator',
-                    !Array.from(document.styleSheets).some(sheet => sheet.href?.endsWith('/vendor/tailwind.generated.css')) && 'Tailwind CSS'
+                    !Array.from(document.styleSheets).some(sheet => sheet.href?.split(/[?#]/)[0].endsWith('/vendor/tailwind.generated.css')) && 'Tailwind CSS'
                 ].filter(Boolean);
                 if (!missing.length) return;
                 const root = document.getElementById('root');
