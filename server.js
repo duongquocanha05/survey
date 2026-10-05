@@ -157,6 +157,14 @@ function createApp(options = {}) {
     }
   });
 
+  app.use('/tram-ky-gui', express.static(path.join(__dirname, 'tram-ky-gui'), {
+    index: 'index.html',
+    dotfiles: 'deny',
+    setHeaders(res, filename) {
+      if (path.extname(filename) === '.html') res.set('Cache-Control', 'no-cache');
+    }
+  }));
+
   app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'main.html')));
   app.get('/main.html', (_req, res) => res.sendFile(path.join(__dirname, 'main.html')));
   app.get('/admin.html', (_req, res) => res.sendFile(path.join(__dirname, 'admin.html')));

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRẠM KÝ GỬI - Ký gửi & Nâng cấp Giáo trình</title>
+    
+    <link rel="stylesheet" href="./vendor/tailwind.generated.css?v=f7c8775aca15">
+    <script src="./vendor/react.production.min.js?v=d949f1c3687a"></script>
+    <script src="./vendor/react-dom.production.min.js?v=35f4f974f4b2"></script>
+    <script src="./vendor/lucide.min.js?v=b26eac159a87"></script>
+    <script src="./vendor/qrcode.js?v=18ae399f8118"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./site.1b8815108df3.css">
+<meta name="description" content="LOCKER F5,5 — mua đồ cũ, ký gửi và nâng cấp giáo trình, đồ dùng sinh viên. Prototype trình diễn với Locker và cổng quản trị.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%2317271f%22%2F%3E%3Cpath%20d%3D%22M15%2012h34v40H15zM15%2032h34M32%2012v40%22%20fill%3D%22none%22%20stroke%3D%22%23c3e879%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M25%2022v4m14-4v4M25%2040v4m14-4v4%22%20stroke%3D%22%23fff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+</head>
+<body class="bg-navy-50 text-slate-800 font-sans antialiased overflow-hidden h-screen w-screen selection:bg-brand-500 selection:text-white">
+    <div id="root" class="h-full w-full">
+        <div role="status" style="padding:24px;font:600 16px sans-serif;color:#173c2b">Đang tải Trạm Ký Gửi…</div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            window.setTimeout(() => {
+                const missing = [
+                    !window.React && 'React',
+                    !window.ReactDOM?.createRoot && 'ReactDOM',
+                    !window.Babel?.transformScriptTags && 'Babel',
+                    !window.lucide?.icons && 'Lucide icons',
+                    !window.qrcode && 'QR generator',
+                    !Array.from(document.styleSheets).some(sheet => sheet.href?.endsWith('/vendor/tailwind.generated.css')) && 'Tailwind CSS'
+                ].filter(Boolean);
+                if (!missing.length) return;
+                const root = document.getElementById('root');
+                if (!root) return;
+                root.innerHTML = `<main role="alert" style="max-width:640px;margin:10vh auto;padding:28px;border:1px solid #f3c98b;border-radius:14px;background:#fff8e9;color:#44351b;font:16px/1.6 sans-serif"><h1 style="margin:0 0 12px;font-size:24px">Trạm Ký Gửi chưa tải đủ thư viện</h1><p>Không tải được: ${missing.join(', ')}. Hãy kiểm tra các tệp trong thư mục vendor rồi thử tải lại trang.</p><button onclick="location.reload()" style="padding:10px 16px;border:0;border-radius:8px;background:#28754f;color:white;font-weight:700;cursor:pointer">Thử tải lại</button></main>`;
+            }, 0);
+        });
+    </script>
+
+    <script src="./app.4559c36af658.js"></script>
+</body>
+</html>
