@@ -1,5 +1,13 @@
 # Khảo sát đăng nhập Google, lưu vào Google Sheets
 
+## Prototype Trạm Ký Gửi
+
+Bản demo LOCKER F5,5 được phục vụ riêng tại `/tram-ky-gui/`. Các file công khai nằm trong `tram-ky-gui/`, gồm HTML, CSS và JavaScript đã biên dịch trước. Không cần package bổ sung; máy chủ Express hiện tại phục vụ bản demo này.
+
+Dữ liệu Student/Admin/Locker lưu chung trên localStorage của từng trình duyệt. Đây là prototype; thanh toán và mở tủ là mô phỏng. Ảnh QR MoMo gốc chưa có trong bộ assets. Giữ toàn bộ file trong thư mục khi cập nhật; source phát triển được lưu ở WorkFlow trên máy cá nhân.
+
+Sau khi deploy bản cập nhật, truy cập `/tram-ky-gui/` trên cùng hostname của service. Khảo sát vẫn ở `/`, trang quản lý khảo sát vẫn ở `/admin.html`.
+
 Người tham gia đăng nhập Google ở trang đầu. Express xác minh ID token, lấy email từ tài khoản Google và giữ phiên đăng nhập trong 2 giờ. Khi gửi khảo sát, Express ký yêu cầu rồi chuyển sang Apps Script; Apps Script kiểm tra chữ ký, chặn email hoặc tài khoản đã trả lời, và ghi vào tab `Responses_v2`. Trang quản lý vẫn đọc Sheet bằng Apps Script như trước.
 
 ## 1. Tạo Google OAuth Client ID
