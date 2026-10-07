@@ -32,11 +32,12 @@ function registerLockerChat(app, options = {}) {
     if(typeof req.body?.message!=='string'||!req.body.message.trim()||req.body.message.length>500)return res.status(400).json({ok:false,error:'Câu hỏi cần có 1–500 ký tự.'});
     const message=req.body.message.trim();
     if(knowledge.unsafe(message))return send(res,{ok:true,source:'scope',needs_support:false,reply:'Đừng gửi mật khẩu, PIN, số thẻ hay khóa API trong chat. Mình chỉ hỗ trợ thông tin mua đồ, ký gửi và Locker của Trạm.'});
-    if(knowledge.outside(message)||!knowledge.inScope(message)&&!knowledge.answer(message))return send(res,{ok:true,source:'scope',needs_support:false,reply:'Mình chỉ hỗ trợ mua đồ, ký gửi, nâng cấp, tài khoản và Locker của Trạm. Bạn chọn một câu hỏi gợi ý nhé.'});
+    if(knowledge.outside(message))return send(res,{ok:true,source:'scope',needs_support:false,reply:knowledge.scopeReply});
     if(knowledge.needsHuman(message))return send(res,fallback('customer_service'));
     const direct=knowledge.answer(message);
     if(direct)return send(res,{ok:true,source:'knowledge',needs_support:false,reply:direct});
-    if(!key)return send(res,fallback('not_configured'));
+    if(!knowledge.inScope(message))return send(res,{ok:true,source:'scope',needs_support:false,reply:knowledge.scopeReply});
+    if(!key)return send(res,{ok:true,source:'knowledge',needs_support:false,reason:'not_configured',reply:knowledge.clarification(message)});
     const history=Array.isArray(req.body.history)?req.body.history.slice(-6).filter(item=>item&&['user','assistant'].includes(item.role)&&typeof item.text==='string'&&!knowledge.unsafe(item.text)).map(item=>({role:item.role,content:item.text.slice(0,500)})):[];
     const cacheKey=JSON.stringify([message,history]);
     const cached=cache.get(cacheKey);
