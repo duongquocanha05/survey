@@ -4,6 +4,7 @@ const path = require('path');
 const crypto = require('crypto');
 const cookieSession = require('cookie-session');
 const { OAuth2Client } = require('google-auth-library');
+const { registerLockerChat } = require('./locker-chat');
 
 const SESSION_DURATION_MS = 2 * 60 * 60 * 1000;
 const GAS_REQUEST_TIMEOUT_MS = 20000;
@@ -42,6 +43,8 @@ function createApp(options = {}) {
     res.set('Cache-Control', 'no-store');
     next();
   });
+
+  registerLockerChat(app, { ...options.lockerChat, publicOrigin, now });
 
   function requireConfiguration(_req, res, next) {
     if (!configured) return res.status(503).json({ ok: false, error: 'Đăng nhập Google chưa được cấu hình trên máy chủ.' });
