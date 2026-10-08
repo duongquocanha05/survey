@@ -72,7 +72,7 @@ function registerLockerChat(app, options = {}) {
       const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(new Error('timeout'));},timeoutMs);});
       const result=await Promise.race([task,deadline]);
       if(typeof result?.reply!=='string'||typeof result.needs_support!=='boolean'||!result.reply.trim()||result.reply.length>1400||knowledge.unsafe(result.reply)||/https?:\/\//i.test(result.reply))throw new Error('invalid_response');
-      const data={ok:true,source:'gemini',needs_support:result.needs_support,reply:result.reply.trim()};
+      const data={ok:true,source:'gemini',needs_support:result.needs_support,reply:result.reply.trim().replace(/(?:Mình|Tôi|Trạm) sẽ chuyển[^.!?]*[.!?]?/gi,'Bạn có thể bấm “Gửi yêu cầu này tới CSKH” để nhân viên kiểm tra.').replace(/(?:Mình|Tôi) đã (?:chuyển|gửi)[^.!?]*[.!?]?/gi,'Bạn có thể bấm “Gửi yêu cầu này tới CSKH” để gửi câu hỏi cho nhân viên.')};
       if(!data.needs_support){if(cache.size>=200)cache.delete(cache.keys().next().value);cache.set(cacheKey,{at:now(),data});}
       return send(res,data);
     }catch(error){return send(res,aiFallback(['timeout','rate_limit'].includes(error.message)||/^provider_http_(400|401|403|404|500|502|503)$/.test(error.message)?error.message:'unavailable'));}
