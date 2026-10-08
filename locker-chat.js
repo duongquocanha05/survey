@@ -62,7 +62,7 @@ function registerLockerChat(app, options = {}) {
         if(options.transport)return options.transport(request,{signal:controller.signal});
         const response=await (options.fetch ?? fetch)(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(request),signal:controller.signal});
         if(response.status===429)throw new Error('rate_limit');
-        if(!response.ok)throw new Error('upstream_unavailable');
+        if(!response.ok)throw new Error('provider_http_'+response.status);
         const data=await response.json();
         const candidate=data.candidates?.[0];
         if(!candidate||candidate.finishReason!=='STOP')throw new Error('incomplete_response');
@@ -75,7 +75,7 @@ function registerLockerChat(app, options = {}) {
       const data={ok:true,source:'gemini',needs_support:result.needs_support,reply:result.reply.trim()};
       if(!data.needs_support){if(cache.size>=200)cache.delete(cache.keys().next().value);cache.set(cacheKey,{at:now(),data});}
       return send(res,data);
-    }catch(error){return send(res,aiFallback(['timeout','rate_limit'].includes(error.message)?error.message:'unavailable'));}
+    }catch(error){return send(res,aiFallback(['timeout','rate_limit'].includes(error.message)||/^provider_http_(400|401|403|404|500|502|503)$/.test(error.message)?error.message:'unavailable'));}
     finally{clearTimeout(timer);controller.abort();}
   });
 }
