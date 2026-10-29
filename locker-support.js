@@ -67,7 +67,7 @@
       return stock ? `Có ${stock.length} món đang bán từ kho trung tâm trong phiên demo này. Các trạm chỉ dùng giao/nhận; chọn trạm nhận khi tạo đơn.` : 'Hàng bán nằm tại kho trung tâm. Mở Khám phá để xem các món đang có trong phiên demo; trạm chỉ dùng giao/nhận.';
     }
     // Specific price/PIN questions take priority over the broader consignment topic.
-    const priority = ['benefits','fees','payment','geometry','hours','pin','policy','contact','account','wallet','tracking','condition','accepted','buy','consign','stations'];
+    const priority = ['laundry','rental','benefits','fees','payment','geometry','hours','pin','policy','contact','account','wallet','tracking','condition','accepted','buy','consign','stations'];
     for (const id of priority) { const item=faq.find(f=>f.id===id); if (item.pattern.test(q)) return item.answer; }
     return null;
   }
